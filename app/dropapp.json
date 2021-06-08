@@ -1,0 +1,14 @@
+{
+	"name":	"Leftovers",
+	"version": "0.1.4",
+	"api": 0,
+	"user_permissions": [{
+		"key": "archive",
+		"name": "Archive",
+		"description": "Archive items so they are no longer visible."
+	},{
+		"key": "create",
+		"name": "Create",
+		"description": "Create new items."
+	}]
+}

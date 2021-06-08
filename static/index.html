@@ -1,0 +1,29 @@
+<h1>Hello World</h1>
+
+<input type="file" id="fileUpload" />
+
+<form method="post" action="/archive">
+<button type="submit">Archive</button>
+</form>
+
+<script>
+
+	document.querySelector('#fileUpload').addEventListener('change', event => {
+		const files = event.target.files;
+		const formData = new FormData();
+		formData.append('loimage', files[0]);
+
+		fetch('/upload', {
+			method: 'POST',
+			body: formData
+		})
+		.then(response => response.json())
+		.then(data => {
+			console.log(data)
+		})
+		.catch(error => {
+			console.error(error)
+		});
+	});
+
+</script>
