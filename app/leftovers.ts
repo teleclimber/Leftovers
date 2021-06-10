@@ -4,6 +4,8 @@ import { MultipartReader, FormFile } from "https://deno.land/std@0.97.0/mime/mul
 import Metadata from '@dropserver/ds-metadata.ts';
 import Users from '@dropserver/appspace-users.ts';
 
+import {dateStr} from './helpers.ts';
+
 type item = {
 	id:number,	//string? sqlite rowid?
 	title :string,
@@ -40,10 +42,10 @@ export function getLeftoverItems(req:ServerRequest) {
 	req.respond({status:200, body: JSON.stringify(items)});
 }
 
-export async function uploadRoute(req:ServerRequest) {
+export async function newItemHandler(req:ServerRequest) {
 	const form_data = await getUploaded(req);
 
-	//console.log(form_data);
+	console.log(form_data);
 
 	req.respond({status:200});
 }
@@ -74,12 +76,18 @@ async function getUploaded(req:ServerRequest) : Promise<RetForm|undefined> {
 		if( value?.content === undefined ) throw new Error("no file data in content");
 		value = <FormFile>value;
 
-		const p = path.join(Metadata.appspace_path, 'images', value.filename);
+		const p = path.join(Metadata.appspace_path, 'images', makeImageFilename());
 
 		await Deno.writeFile(p, value.content!)
 	}
 	
 	return form;
+}
+
+function makeImageFilename() :string {
+	const a=new Uint16Array(1);
+	crypto.getRandomValues(a);
+	return dateStr(new Date()) + '-' + a[0].toString(16)+'.jpg';
 }
 
 export async function archiveRoute(req:ServerRequest) {

@@ -8,6 +8,7 @@
 
 	<div>
 		<LeftoverListItem v-for="item in leftovers.items" :item="item" :key="item.id"></LeftoverListItem>
+		<router-link to="New" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full fixed bottom-4 right-4">New</router-link>
 	</div>
 </template>
 

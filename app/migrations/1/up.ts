@@ -18,17 +18,18 @@ export default async function() {
 	};
 	await Routes.createRoute(["get"], "/api/leftovers", {allow:"authorized"}, get_items);
 
-	// const upload_handler :FunctionHandler = {
-	// 	type:"function",
-	// 	file:"@app/leftovers.ts",
-	// 	function: "uploadRoute"
-	// };
-	// await Routes.createRoute(["post"], "/upload", {allow:"authorized", permission:"create"}, upload_handler);
+	const new_item :FunctionHandler = {
+		type:"function",
+		file:"@app/leftovers.ts",
+		function: "newItemHandler"
+	};
+	await Routes.createRoute(["post"], "/api/leftovers", 
+		{allow:"authorized", permission:"create"}, new_item);
 
-	// // create a dir for the images:
-	// const images_path = path.join(Metadata.appspace_path, 'images');
-	// console.log("images path: "+images_path);
-	// await Deno.mkdir(images_path);
+	// create a dir for the images:
+	const images_path = path.join(Metadata.appspace_path, 'images');
+	console.log("images path: "+images_path);
+	await Deno.mkdir(images_path);
 
 	// const images_handler :FileHandler = {
 	// 	type:"file",
