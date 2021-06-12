@@ -1,9 +1,27 @@
 import * as path from "https://deno.land/std@0.97.0/path/mod.ts";
 import Metadata from '@dropserver/ds-metadata.ts';
 import Routes, {FileHandler, FunctionHandler} from '@dropserver/appspace-routes-db.ts';
+import {createDatabase} from '@dropserver/appspace-database.ts';
 
 export default async function() {
-	await sleep();
+	// create databases:
+	console.log("creating db");
+	const db = await createDatabase("leftoversdb");
+
+	console.log("creating table");
+	await db.exec(`CREATE TABLE "leftovers" (
+			"id" INTEGER PRIMARY KEY ASC,
+			"title" TEXT,
+			"description" TEXT,
+			"start_date" DATETIME,
+			"spoil_date" DATETIME,
+			"image" TEXT,
+			"finished" INTEGER
+		)`);
+
+	console.log("creating index");
+	await db.exec(`CREATE INDEX active ON leftovers (spoil_date, finished)`)
+	// end db
 
 	const main_handler :FileHandler = {
 		type:"file",
@@ -13,14 +31,14 @@ export default async function() {
 
 	const get_items:FunctionHandler = {
 		type:"function",
-		file:"@app/leftovers.ts",
+		file:"@app/handlers/leftovers.ts",
 		function: "getLeftoverItems"
 	};
 	await Routes.createRoute(["get"], "/api/leftovers", {allow:"authorized"}, get_items);
 
 	const new_item :FunctionHandler = {
 		type:"function",
-		file:"@app/leftovers.ts",
+		file:"@app/handlers/leftovers.ts",
 		function: "newItemHandler"
 	};
 	await Routes.createRoute(["post"], "/api/leftovers", 

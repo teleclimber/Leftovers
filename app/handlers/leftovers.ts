@@ -4,10 +4,12 @@ import { MultipartReader, FormFile } from "https://deno.land/std@0.97.0/mime/mul
 import Metadata from '@dropserver/ds-metadata.ts';
 import Users from '@dropserver/appspace-users.ts';
 
-import {dateStr} from './helpers.ts';
+import {insert}  from '../models/leftovers.ts';
+
+import {dateStr} from '../helpers.ts';
 
 type item = {
-	id:number,	//string? sqlite rowid?
+	id:number,
 	title :string,
 	description:string,
 	image_file:string,
@@ -45,17 +47,50 @@ export function getLeftoverItems(req:ServerRequest) {
 export async function newItemHandler(req:ServerRequest) {
 	const form_data = await getUploaded(req);
 
+	if( !form_data ) {
+		req.respond({status:400});
+		return
+	}
+
 	console.log(form_data);
 
-	req.respond({status:200});
+	if( !form_data.start_date || !form_data.days_to_spoil ) {
+		req.respond({status:400});
+		return
+	}
+
+	const start_date = form_data.start_date;
+	const spoil_date = new Date(start_date.valueOf());
+	spoil_date.setDate(spoil_date.getDate() + Number(form_data.days_to_spoil))
+
+	const ins_data = {
+		title: form_data.title || '',
+		description: form_data.description || '',
+		start_date: form_data.start_date,
+		spoil_date,
+		image: form_data.image || ''
+	}
+
+	const new_id = await insert(ins_data);
+
+	console.log("new ID: "+new_id);
+
+	req.respond({status:200});	// after storage, return item id.
 }
 
 // inspired by https://github.com/deligenius/multiparser
 const boundaryRegex = /^multipart\/form-data;\sboundary=(?<boundary>.*)$/;
 
-type RetForm = Record<string, FormFile | FormFile[] | string>;
+type ItemData = {
+	id?: number,	//used later for updates
+	title?: string,
+	description?: string,
+	days_to_spoil?: number,
+	start_date?: Date,
+	image?:string
+}
 
-async function getUploaded(req:ServerRequest) : Promise<RetForm|undefined> {
+async function getUploaded(req:ServerRequest) : Promise<ItemData|undefined> {
 	const content_type = req.headers.get("content-type");
 	if( content_type === null ) return;
 
@@ -69,19 +104,26 @@ async function getUploaded(req:ServerRequest) : Promise<RetForm|undefined> {
 	const formData = await reader.readForm(10 << 20);	// TODO: improve max memory
 
 
-	const form: RetForm = {};
+	let ret :ItemData = {};
 	for (let [key, value] of formData.entries()) {
 		if( Array.isArray(value) ) throw new Error("Did not expect an array. key: "+key);
 		if( typeof value === 'string' ) throw new Error("Did not expect an string. key: "+key);
 		if( value?.content === undefined ) throw new Error("no file data in content");
-		value = <FormFile>value;
 
-		const p = path.join(Metadata.appspace_path, 'images', makeImageFilename());
-
-		await Deno.writeFile(p, value.content!)
+		if( key === 'image' ) {
+			ret.image = makeImageFilename();
+			const p = path.join(Metadata.appspace_path, 'images', ret.image);
+			await Deno.writeFile(p, value.content!)
+		} else if (key === 'data') {
+			const json_str = new TextDecoder().decode(value.content);
+			const data = JSON.parse(json_str);
+			Object.assign(ret, data);
+		}
 	}
+
+	if( Object.keys(ret).length === 0 ) return undefined;
 	
-	return form;
+	return ret;
 }
 
 function makeImageFilename() :string {

@@ -48,3 +48,34 @@ export class LeftoverItems {
 
 
 }
+
+export async function postNewItem(imageData:Blob|null, title:string, description:string, days_to_spoil:number, start_date:Date) {
+	const formData = new FormData();
+	if( imageData !== null ) formData.append('image', imageData);
+
+	const json = JSON.stringify({
+		title,
+		description,
+		days_to_spoil,
+		start_date
+	});
+	const json_blob = new Blob([json], {
+		type: 'application/json'
+	});
+
+	formData.append('data', json_blob);
+
+	let resp:Response|undefined;
+	try {
+		resp = await fetch('/api/leftovers', {
+			method: 'POST',
+			body: formData
+		})
+	} catch(e) {
+		console.error(e);
+	}
+
+	const r = resp?.json();
+
+	console.log(r);
+}

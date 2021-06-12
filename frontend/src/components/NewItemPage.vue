@@ -43,6 +43,7 @@
 <script lang="ts">
 import { defineComponent, PropType, ref, Ref } from "vue";
 import Camera from './Camera.vue';
+import {postNewItem} from '../models/leftovers';
 
 export default defineComponent({
 	name: "NewItemPage",
@@ -61,22 +62,9 @@ export default defineComponent({
 		}
 
 		async function save() {
-			const formData = new FormData();
-			if( image.value !== null ) formData.append('loimage', image.value);
+			await postNewItem(image.value, title.value, description.value, days.value, new Date());
 
-			let resp:Response|undefined;
-			try {
-				resp = await fetch('/api/leftovers', {
-					method: 'POST',
-					body: formData
-				})
-			} catch(e) {
-				console.error(e);
-			}
-
-			const r = resp?.json();
-
-			console.log(r);
+			// navigate to new item?
 		}
 
 		return {
