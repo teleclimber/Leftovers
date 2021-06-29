@@ -42,6 +42,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType, ref, Ref } from "vue";
+import router from '../router/index';
 import Camera from './Camera.vue';
 import {postNewItem} from '../models/leftovers';
 
@@ -62,9 +63,9 @@ export default defineComponent({
 		}
 
 		async function save() {
-			await postNewItem(image.value, title.value, description.value, days.value, new Date());
+			const new_id = await postNewItem(image.value, title.value, description.value, days.value, new Date());
 
-			// navigate to new item?
+			router.push({name:"LeftoverItem",params:{id:new_id}} );
 		}
 
 		return {

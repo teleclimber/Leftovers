@@ -7,26 +7,26 @@ export class LeftoverItem {
 	id = 0;	//string? sqlite rowid?
 	title = "";
 	description = "";
-	image_file = "";
+	image = "";
 	start_date = new Date();
+	spoil_date = new Date();
 	last_update = new Date();
-	days_to_spoil = 0;
 
 	setFromRaw(raw :any) {
 		this.id = Number(raw.id);
 		this.title = raw.title+'';
 		this.description = raw.description+'';
-		this.image_file = raw.image_file+'';
+		this.image = raw.image+'';
 		this.start_date = new Date(raw.start_date);
+		this.spoil_date = new Date(raw.spoil_date);
 		this.last_update = new Date(raw.last_update);
-		this.days_to_spoil = Number(raw.days_to_spoil);
 
 		this.loaded = true;
 	}
-	// async fetch(appspace_id: number, proxy_id:string) {
-	// 	const resp_data = await get('/appspace/'+appspace_id+'/user/'+proxy_id);
-	// 	this.setFromRaw(resp_data);
-	// }
+	async fetch(leftover_id: number) {
+		const resp_data = await ax.get('/api/leftovers/'+leftover_id);
+		this.setFromRaw(resp_data.data);
+	}
 }
 
 export class LeftoverItems {
@@ -49,7 +49,7 @@ export class LeftoverItems {
 
 }
 
-export async function postNewItem(imageData:Blob|null, title:string, description:string, days_to_spoil:number, start_date:Date) {
+export async function postNewItem(imageData:Blob|null, title:string, description:string, days_to_spoil:number, start_date:Date) :Promise<number> {
 	const formData = new FormData();
 	if( imageData !== null ) formData.append('image', imageData);
 
@@ -75,7 +75,11 @@ export async function postNewItem(imageData:Blob|null, title:string, description
 		console.error(e);
 	}
 
-	const r = resp?.json();
+	if( resp === undefined ) {
+		throw new Error("response undefined");
+	}
 
-	console.log(r);
+	const r = await resp.json();
+
+	return r.id;
 }

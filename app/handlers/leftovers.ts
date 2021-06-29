@@ -1,10 +1,12 @@
 import * as path from "https://deno.land/std@0.97.0/path/mod.ts";
-import type {ServerRequest} from "https://deno.land/std@0.97.0/http/server.ts";
+import type {ServerRequest, Response} from "https://deno.land/std@0.97.0/http/server.ts";
 import { MultipartReader, FormFile } from "https://deno.land/std@0.97.0/mime/multipart.ts";
+import type { Context} from '@dropserver/app-router.ts';
 import Metadata from '@dropserver/ds-metadata.ts';
 import Users from '@dropserver/appspace-users.ts';
 
-import {insert}  from '../models/leftovers.ts';
+import {insert, getByID, getActive}  from '../models/leftovers.ts';
+import type {Leftover} from '../models/leftovers.ts';
 
 import {dateStr} from '../helpers.ts';
 
@@ -15,44 +17,59 @@ type item = {
 	image_file:string,
 	start_date:Date,
 	last_update:Date,
-	days_to_spoil:number
+	spoil_date:Date
 }
 
-// temporary dummy data:
-const items:item[] = [{
-	id:0,
-	title:"Veg dinner",
-	description:"",
-	image_file:"",
-	last_update:new Date("June 7, 2021 20:00:00 PDT"),
-	start_date:new Date("June 7, 2021 20:00:00 PDT"),
-	days_to_spoil: 6
-},{
-	id:1,
-	title:"Chicken Curry",
-	description:"one portion left",
-	image_file:"",
-	last_update:new Date("June 5, 2021 20:00:00 PDT"),
-	start_date:new Date("June 5, 2021 20:00:00 PDT"),
-	days_to_spoil: 6
+export async function getLeftoverItems(ctx:Context) {
+	let items:Leftover[];
+	try {
+		items = await getActive();
+	} catch(e) {
+		ctx.req.respond({status:500, body:e});
+		return;
+	}
+
+	const headers = new Headers;
+	headers.set('Content-Type', 'application/json');
+	const resp: Response = {
+		status: 200,
+		headers: headers,
+		body: JSON.stringify(items)
+	};
+	ctx.req.respond(resp);
 }
 
-];
+export async function getLeftoverItem(ctx:Context) {
+	const params = <{id:string}>ctx.params;
 
-export function getLeftoverItems(req:ServerRequest) {
+	let item:Leftover;
+	try {
+		item = await getByID(Number(params.id));
+	} catch(e) {
+		ctx.req.respond({status:500, body:e});
+		return;
+	}
 
-	req.respond({status:200, body: JSON.stringify(items)});
+	const headers = new Headers;
+	headers.set('Content-Type', 'application/json');
+
+	const resp: Response = {
+		status: 200,
+		headers: headers,
+		body: JSON.stringify(item)
+	};
+	
+	ctx.req.respond(resp);
 }
 
-export async function newItemHandler(req:ServerRequest) {
+export async function postLeftoverItem(ctx:Context) {
+	const req = ctx.req;
 	const form_data = await getUploaded(req);
 
 	if( !form_data ) {
 		req.respond({status:400});
 		return
 	}
-
-	console.log(form_data);
 
 	if( !form_data.start_date || !form_data.days_to_spoil ) {
 		req.respond({status:400});
@@ -68,14 +85,20 @@ export async function newItemHandler(req:ServerRequest) {
 		description: form_data.description || '',
 		start_date: form_data.start_date,
 		spoil_date,
-		image: form_data.image || ''
+		image: form_data.image || '',
+		finished: false
 	}
 
 	const new_id = await insert(ins_data);
 
-	console.log("new ID: "+new_id);
-
-	req.respond({status:200});	// after storage, return item id.
+	const headers = new Headers;
+	headers.set('Content-Type', 'application/json');
+	const resp: Response = {
+		status: 200,
+		headers: headers,
+		body: JSON.stringify({id:new_id})
+	};
+	ctx.req.respond(resp);
 }
 
 // inspired by https://github.com/deligenius/multiparser

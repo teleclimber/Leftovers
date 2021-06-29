@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import ActiveItemsPage from '../components/ActiveItemsPage.vue';
 import NewItemPage from '../components/NewItemPage.vue';
+import ItemPage from '../components/ItemPage.vue';
 
 const routes: Array<RouteRecordRaw> = [
 	{
@@ -11,6 +12,11 @@ const routes: Array<RouteRecordRaw> = [
     path:'/new',
     name:'New',
     component: NewItemPage
+  },{
+    path:'/leftovers/:id',
+    name:'LeftoverItem',
+    component: ItemPage,
+    props: true
   }
 
   // {
