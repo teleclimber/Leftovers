@@ -1,13 +1,12 @@
 
 <template>
-	<!-- div id="nav">
-		<router-link to="/">Home</router-link> |
-		<router-link to="/about">About</router-link>
-	</!-->
-	<!-- router-view/ -->
-
 	<div>
-		<LeftoverListItem v-for="item in leftovers.items" :item="item" :key="item.id"></LeftoverListItem>
+		<div class="grid grid-cols-3">
+			<LeftoverListItem v-for="item in leftovers.items" :item="item" :key="item.id"></LeftoverListItem>
+		</div>
+		<div v-if="leftovers.items.length === 0" class="h-64 flex items-center justify-center">
+			Nothing at the moment.
+		</div>
 		<router-link to="New" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full fixed bottom-4 right-4">New</router-link>
 	</div>
 </template>

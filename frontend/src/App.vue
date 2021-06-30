@@ -6,8 +6,15 @@
 	<!-- router-view/ -->
 
 	<div>
-		<header class="sticky top-0 z-50 bg-green-600 text-white">
-			Leftovers Header
+		<header class="sticky top-0 z-50 h-16 bg-green-600 text-white flex items-center justify-between">
+			<div class="pl-6">
+				<span class="text-2xl">
+					<router-link to="/">Leftovers</router-link>
+				</span>
+			</div>
+			<div class="pr-6">
+				<span>[user]</span>
+			</div>
 		</header>
 		<main class=relative>
 			<UpdateUI></UpdateUI>

@@ -1,17 +1,18 @@
 <template>
 	<div>
-		<button v-if="capture_mode" @click="captureImage" class="bg-blue-300 p-2 rounded-sm">
-			Take Picture
-		</button>
-		<button v-if="!capture_mode" @click="enterCaptureMode" class="bg-blue-300 p-2 rounded-sm">
-			Take another Picture
-		</button>
-
 		<div class="camera-box">  
 			<video v-show="capture_mode" ref="camera_elem" :width="width" :height="height" autoplay></video>
 			<canvas v-show="!capture_mode" ref="canvas_elem" :width="width" :height="height"></canvas>
 		</div>
 
+		<div class="flex justify-center">
+			<button v-if="capture_mode" @click="captureImage" class="bg-blue-300 p-2 rounded">
+				Take Picture
+			</button>
+			<button v-if="!capture_mode" @click="enterCaptureMode" class="bg-blue-300 p-2 rounded">
+				Take another Picture
+			</button>
+		</div>
 
 	</div>
 </template>

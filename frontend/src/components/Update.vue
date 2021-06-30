@@ -1,12 +1,9 @@
 
 
 <template>
-	<div v-if="update.update_exists">
+	<div v-if="update.update_exists" class="p-2 bg-red-50">
 		Update Exists
 		<button @click="update.refreshApp()">Refresh</button>
-	</div>
-	<div v-else>
-		App is up to date
 	</div>
 </template>
 
