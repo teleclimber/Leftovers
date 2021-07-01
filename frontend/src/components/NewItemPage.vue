@@ -58,8 +58,7 @@ export default defineComponent({
 		const image :Ref<Blob|null> = ref(null);
 
 		async function imageCaptured(ev:any) {
-			const b64resp = await fetch(ev);
-			image.value = await b64resp.blob();
+			image.value = ev;
 		}
 
 		async function save() {

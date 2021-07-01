@@ -1,6 +1,6 @@
 {
 	"name":	"Leftovers",
-	"version": "0.1.4",
+	"version": "0.1.5",
 	"api": 0,
 	"user_permissions": [{
 		"key": "archive",

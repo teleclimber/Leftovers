@@ -49,11 +49,10 @@ export default defineComponent({
 
 			capture_mode.value = false;
 
-			const dataURL = canvas_elem.value.toDataURL("image/jpeg", 0.7);
-
-			console.log("camera data url", dataURL);
-
-			context.emit('imageCaptured', dataURL);
+			canvas_elem.value.toBlob( (b:Blob|null) => {
+				console.log("camera data bloc", b);
+				if( b ) context.emit('imageCaptured', b);
+			}, "image/jpeg", 0.7)
 		}
 		function enterCaptureMode() {
 			capture_mode.value = true;
