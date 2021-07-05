@@ -1,6 +1,5 @@
 import * as path from "https://deno.land/std@0.97.0/path/mod.ts";
 import Metadata from '@dropserver/ds-metadata.ts';
-import Routes, {FileHandler, FunctionHandler} from '@dropserver/appspace-routes-db.ts';
 import {createDatabase} from '@dropserver/appspace-database.ts';
 
 export default async function() {
@@ -15,7 +14,8 @@ export default async function() {
 			"start_date" DATETIME,
 			"spoil_date" DATETIME,
 			"image" TEXT,
-			"finished" INTEGER
+			"finished" INTEGER,
+			"proxy_id" TEXT
 		)`);
 
 	console.log("creating index");

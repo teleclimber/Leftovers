@@ -10,7 +10,8 @@ export class LeftoverItem {
 	image = "";
 	start_date = new Date();
 	spoil_date = new Date();
-	last_update = new Date();
+	last_update = new Date();//unsure how we do this
+	proxy_id = "";	// proxy id of user of update [later]
 
 	setFromRaw(raw :any) {
 		this.id = Number(raw.id);
@@ -20,6 +21,7 @@ export class LeftoverItem {
 		this.start_date = new Date(raw.start_date);
 		this.spoil_date = new Date(raw.spoil_date);
 		this.last_update = new Date(raw.last_update);
+		this.proxy_id = raw.proxy_id +'';
 
 		this.loaded = true;
 	}

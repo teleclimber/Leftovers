@@ -1,5 +1,6 @@
 import AppRouter, {AuthAllow} from '@dropserver/app-router.ts';
 import {getLeftoverItems, getLeftoverItem, postLeftoverItem} from './handlers/leftovers.ts';
+import {getCurrentUser, getUser} from './handlers/users.ts';
 
 const r = new AppRouter;
 
@@ -13,6 +14,10 @@ r.add("post", "/api/leftovers", createAuth, postLeftoverItem);
 
 // images 
 r.add("get", {path:"/images", end:false}, authorizedOnly, r.staticFileHandler({path:'@appspace/images/'}));
+
+// users:
+r.add("get", "/api/current-user", authorizedOnly, getCurrentUser)
+r.add("get", "/api/users/:proxy_id", authorizedOnly, getUser);
 
 // frontend. if bare path then serve index
 r.add("get", "/", authorizedOnly, r.staticFileHandler({path:'@app/frontend/index.html'}));

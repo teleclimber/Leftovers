@@ -10,16 +10,6 @@ import type {Leftover} from '../models/leftovers.ts';
 
 import {dateStr} from '../helpers.ts';
 
-type item = {
-	id:number,
-	title :string,
-	description:string,
-	image_file:string,
-	start_date:Date,
-	last_update:Date,
-	spoil_date:Date
-}
-
 export async function getLeftoverItems(ctx:Context) {
 	let items:Leftover[];
 	try {
@@ -63,6 +53,8 @@ export async function getLeftoverItem(ctx:Context) {
 }
 
 export async function postLeftoverItem(ctx:Context) {
+	if( ctx.proxy_id === null ) throw new Error("got a null proxy_id in postLeftoverItem");
+
 	const req = ctx.req;
 	const form_data = await getUploaded(req);
 
@@ -86,7 +78,8 @@ export async function postLeftoverItem(ctx:Context) {
 		start_date: form_data.start_date,
 		spoil_date,
 		image: form_data.image || '',
-		finished: false
+		finished: false,
+		proxy_id: ctx.proxy_id
 	}
 
 	const new_id = await insert(ins_data);

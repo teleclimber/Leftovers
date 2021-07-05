@@ -7,7 +7,7 @@
 		<h2 class="text-lg font-bold">{{item.title}}</h2>
 		 <p>({{start_str}}, spoils {{spoil_str}})</p>
 		<p>{{item.description}}</p>
-		<p>last updated {{last_str}}</p>
+		<p>last updated {{last_str}} by {{user.display_name}}</p>
 	</router-link>
 </template>
 
@@ -15,6 +15,7 @@
 <script lang="ts">
 import { defineComponent, PropType, reactive } from "vue";
 import type { LeftoverItem } from '../models/leftovers';
+import {ReactiveUsers} from '../models/users';
 import dayjs from 'dayjs';
 
 export default defineComponent({
@@ -35,11 +36,14 @@ export default defineComponent({
 		const spoil_str = dayjs(item.spoil_date).fromNow();
 		const last_str = dayjs(item.last_update).fromNow();
 		const image_src = "/images/"+item.image;
+		const user = ReactiveUsers.getUser(item.proxy_id);
+
 		return {
 			image_src,
 			start_str,
 			spoil_str,
-			last_str
+			last_str,
+			user
 		}
 	}
 });

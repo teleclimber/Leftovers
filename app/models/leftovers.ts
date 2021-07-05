@@ -7,7 +7,8 @@ export type Leftover = {
 	image: string,
 	start_date: Date,
 	spoil_date : Date,
-	last_update: Date
+	last_update: Date,
+	proxy_id: string,
 }
 
 export async function getByID(id:number) :Promise<Leftover> {
@@ -37,13 +38,14 @@ type insertData = {
 	start_date: Date,
 	spoil_date: Date,
 	image:string,
-	finished: boolean
+	finished: boolean,
+	proxy_id: string
 }
 export async function insert(data:insertData):Promise<number> {
 	const db = new Database('leftoversdb');
 
-	const res = await db.exec('INSERT INTO leftovers ("title", "description", "start_date", "spoil_date", "image", "finished") '
-		+' VALUES (:title, :description, :start_date, :spoil_date, :image, :finished)', data);
+	const res = await db.exec('INSERT INTO leftovers ("title", "description", "start_date", "spoil_date", "image", "finished", "proxy_id") '
+		+' VALUES (:title, :description, :start_date, :spoil_date, :image, :finished, :proxy_id)', data);
 
 	return res.last_insert_id
 }

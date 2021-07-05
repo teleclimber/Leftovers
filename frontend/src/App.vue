@@ -13,7 +13,7 @@
 				</span>
 			</div>
 			<div class="pr-6">
-				<span>[user]</span>
+				<CurrentUser></CurrentUser>
 			</div>
 		</header>
 		<main class=relative>
@@ -30,22 +30,17 @@
 <script lang="ts">
 import { defineComponent, reactive } from "vue";
 
+import CurrentUser from './components/CurrentUser.vue';
 import UpdateUI from './components/Update.vue';
-import RequestErrorOverlay from './components/RequestErrorOverlay.vue'
+import RequestErrorOverlay from './components/RequestErrorOverlay.vue';
 
 export default defineComponent({
 	name: "App",
 	components: {
+		CurrentUser,
 		UpdateUI,
 		RequestErrorOverlay
 	},
-	// setup() {
-	// 	const update = reactive(new Update);
-	// 	update.init();
-	// 	return {
-	// 		update
-	// 	}
-	// }
 });
 </script>
 
