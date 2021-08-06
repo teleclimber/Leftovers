@@ -9,6 +9,10 @@ module.exports = {
 				target: "http://localhost:3003",
 				changeOrigin: true,
 			},
+			"/avatars": {
+				target: "http://localhost:3003",
+				changeOrigin: true,
+			},
 			"/images": {
 				target: "http://localhost:3003",
 				changeOrigin: true,

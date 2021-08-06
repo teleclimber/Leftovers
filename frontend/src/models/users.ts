@@ -21,11 +21,13 @@ export class User {
 	proxy_id: string = "";
 	permissions: string[] = [];
 	display_name: string = "";
+	avatar: string = "";
 
 	setFromRaw(raw :any) {
 		this.proxy_id = raw.proxy_id+'';
 		this.permissions = raw.permissions;
 		this.display_name = raw.display_name+'';
+		this.avatar = raw.avatar+'';
 
 		this.loaded = true;
 	}
