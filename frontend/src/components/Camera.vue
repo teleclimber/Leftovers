@@ -61,7 +61,11 @@ export default defineComponent({
 		async function createCameraElement() {
 			const constraints = {
 				audio: false,
-				video: true
+				video: {
+					facingMode: {
+						ideal: 'environment'
+					}
+				}
 			};
 
 			try {
