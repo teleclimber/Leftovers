@@ -1,5 +1,5 @@
 import AppRouter, {AuthAllow} from '@dropserver/app-router.ts';
-import {getLeftoverItems, getLeftoverItem, postLeftoverItem} from './handlers/leftovers.ts';
+import {getLeftoverItems, getLeftoverItem, postLeftoverItem, patchLeftoverItem} from './handlers/leftovers.ts';
 import {getCurrentUser, getUser} from './handlers/users.ts';
 
 const r = new AppRouter;
@@ -11,6 +11,7 @@ const createAuth = {allow:AuthAllow.authorized, permissions:"create"}
 r.add("get", "/api/leftovers", authorizedOnly, getLeftoverItems);
 r.add("get", "/api/leftovers/:id", authorizedOnly, getLeftoverItem);
 r.add("post", "/api/leftovers", createAuth, postLeftoverItem);
+r.add("patch", "/api/leftovers/:id", authorizedOnly, patchLeftoverItem);
 
 // images 
 r.add("get", {path:"/images", end:false}, authorizedOnly, r.staticFileHandler({path:'@appspace/images/'}));

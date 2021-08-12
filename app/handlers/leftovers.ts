@@ -5,8 +5,8 @@ import type { Context} from '@dropserver/app-router.ts';
 import Metadata from '@dropserver/ds-metadata.ts';
 import Users from '@dropserver/appspace-users.ts';
 
-import {insert, getByID, getActive}  from '../models/leftovers.ts';
-import type {Leftover} from '../models/leftovers.ts';
+import {insert, update, getByID, getActive}  from '../models/leftovers.ts';
+import type {Leftover, UpdateData} from '../models/leftovers.ts';
 
 import {dateStr} from '../helpers.ts';
 
@@ -63,20 +63,16 @@ export async function postLeftoverItem(ctx:Context) {
 		return
 	}
 
-	if( !form_data.start_date || !form_data.days_to_spoil ) {
+	if( !form_data.start_date || !form_data.spoil_date ) {
 		req.respond({status:400});
 		return
 	}
-
-	const start_date = form_data.start_date;
-	const spoil_date = new Date(start_date.valueOf());
-	spoil_date.setDate(spoil_date.getDate() + Number(form_data.days_to_spoil))
 
 	const ins_data = {
 		title: form_data.title || '',
 		description: form_data.description || '',
 		start_date: form_data.start_date,
-		spoil_date,
+		spoil_date: form_data.spoil_date,
 		image: form_data.image || '',
 		finished: false,
 		proxy_id: ctx.proxy_id
@@ -94,16 +90,44 @@ export async function postLeftoverItem(ctx:Context) {
 	ctx.req.respond(resp);
 }
 
+
+export async function patchLeftoverItem(ctx:Context) {
+	if( ctx.proxy_id === null ) throw new Error("got a null proxy_id in postLeftoverItem");
+
+	const req = ctx.req;
+	const form_data = await getUploaded(req);
+
+	if( !form_data ) {
+		req.respond({status:400});
+		return
+	}
+
+	// Actually no let's get id from path?
+	const params = <{id:string}>ctx.params;
+	const id = Number(params.id);
+
+	const update_data:UpdateData = {
+		image_mode: '',
+		proxy_id: ctx.proxy_id
+	};
+	Object.assign( update_data, form_data);
+
+	await update(id, update_data);
+
+	ctx.req.respond({status:200});
+}
+
 // inspired by https://github.com/deligenius/multiparser
 const boundaryRegex = /^multipart\/form-data;\sboundary=(?<boundary>.*)$/;
 
-type ItemData = {
-	id?: number,	//used later for updates
+export type ItemData = {
 	title?: string,
 	description?: string,
-	days_to_spoil?: number,
 	start_date?: Date,
-	image?:string
+	spoil_date?: Date,
+	image_mode: string,
+	image?:string,
+	finished?:boolean
 }
 
 async function getUploaded(req:ServerRequest) : Promise<ItemData|undefined> {
@@ -119,8 +143,7 @@ async function getUploaded(req:ServerRequest) : Promise<ItemData|undefined> {
 	const reader = new MultipartReader(req.body, formBoundary);
 	const formData = await reader.readForm(10 << 20);	// TODO: improve max memory
 
-
-	let ret :ItemData = {};
+	let ret :ItemData = {image_mode:''};
 	for (let [key, value] of formData.entries()) {
 		if( Array.isArray(value) ) throw new Error("Did not expect an array. key: "+key);
 		if( typeof value === 'string' ) throw new Error("Did not expect an string. key: "+key);

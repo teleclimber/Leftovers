@@ -37,7 +37,11 @@ export default {
 		},{
 			src: '/images/.*',
 			dest: prox
-		},
+		},{
+			match: 'routes',
+			src: '.*',
+			dest: '/index.html',
+		}
 	],
 };
 

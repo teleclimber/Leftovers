@@ -49,3 +49,41 @@ export async function insert(data:insertData):Promise<number> {
 
 	return res.last_insert_id
 }
+
+export type UpdateData = {
+	title?: string,
+	description?: string,
+	start_date?: Date,
+	spoil_date?: Date,
+	image_mode: string,
+	image?:string,
+	finished?: boolean,
+	proxy_id: string
+}
+const update_keys = ["proxy_id", 'title', 'description', 'finished']
+export async function update(id:number, data:UpdateData) {
+	const db = new Database('leftoversdb');
+
+	const sets :string[] = [];
+	const set_data :Record<string, any> = {'id':id};
+	update_keys.forEach( k => {
+		if( !data.hasOwnProperty(k) ) return;
+		sets.push(`${k} = :${k}`);
+		// @ts-ignore 
+		set_data[k] = data[k];
+	});
+	if( data.image_mode === "replace" ) {
+		sets.push('image = :image');
+		set_data['image'] = data.image;
+	} 
+	else if( data.image_mode === "no-image" ) {
+		sets.push('image = :image');
+		set_data['image'] = '';
+	}
+
+	let q = 'UPDATE leftovers SET '+sets.join(', ')+' WHERE id = :id';
+
+	console.log(q, set_data);
+
+	await db.exec(q, set_data);
+}

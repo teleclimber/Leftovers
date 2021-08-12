@@ -1,8 +1,6 @@
 <template>
 	<div class="p-4">
-		<Camera @imageCaptured="imageCaptured"></Camera>
-
-		
+		<Camera @imageChanged="imageChanged"></Camera>
 
 		<div class="my-4">
 			<label for="title" class="block text-sm font-medium text-gray-700">
@@ -45,6 +43,7 @@ import { defineComponent, PropType, ref, Ref } from "vue";
 import router from '../router/index';
 import Camera from './Camera.vue';
 import {postNewItem} from '../models/leftovers';
+import {ImageChangeMode} from '../models/leftovers';
 
 export default defineComponent({
 	name: "NewItemPage",
@@ -57,8 +56,13 @@ export default defineComponent({
 		const days = ref(5);
 		const image :Ref<Blob|null> = ref(null);
 
-		async function imageCaptured(ev:any) {
-			image.value = ev;
+		async function imageChanged(ev:any) {
+			if( ev.mode === ImageChangeMode.Replace) {
+				image.value = ev.data;
+			}
+			else {
+				image.value = null;
+			}
 		}
 
 		async function save() {
@@ -69,7 +73,7 @@ export default defineComponent({
 
 		return {
 			title, description, days,
-			imageCaptured, save
+			imageChanged, save
 		}
 	}
 

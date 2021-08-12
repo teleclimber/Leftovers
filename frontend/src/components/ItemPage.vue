@@ -5,6 +5,7 @@
 		<h2 class="text-lg font-bold">{{item.title}} ({{start_str}}, spoils {{spoil_str}})</h2>
 		<p>{{item.description}}</p>
 		<p>last updated {{last_str}} by {{user.display_name}}</p>
+		<p>Update: <router-link :to="{name:'LeftoverItemUpdate', params:{id:id}}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full ">Update</router-link></p>
 	</div>
 </template>
 
