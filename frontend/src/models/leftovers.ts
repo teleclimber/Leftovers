@@ -20,7 +20,7 @@ export class LeftoverItem {
 	spoil_date = new Date();
 	last_update = new Date();//unsure how we do this
 	proxy_id = "";	// proxy id of user of update [later]
-	// add finished
+	finished = false;
 
 	setFromRaw(raw :any) {
 		this.id = Number(raw.id);
@@ -30,6 +30,7 @@ export class LeftoverItem {
 		this.start_date = new Date(raw.start_date);
 		this.spoil_date = new Date(raw.spoil_date);
 		this.last_update = new Date(raw.last_update);
+		this.finished = !!raw.finished;
 		this.proxy_id = raw.proxy_id +'';
 
 		this.loaded = true;
@@ -105,7 +106,7 @@ export type ItemPatchData = {
 	description?:string,
 	//start_date:Date,
 	//days_to_spoil:number,	// maybe calculate that in UI and use a date here
-	// finished
+	finished?: boolean
 }
 export async function patchItem(id: number, patch:ItemPatchData) {
 	const formData = new FormData();

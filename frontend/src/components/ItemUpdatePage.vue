@@ -97,7 +97,7 @@ export default defineComponent({
 				cur_image.value.src = "/images/"+item.image;
 			}
 			
-			//finished.value = item.finished;
+			finished.value = item.finished;
 		})
 
 		async function imageChanged(ev:any) {
@@ -117,10 +117,12 @@ export default defineComponent({
 			if( image_change.value === ImageChangeMode.Replace ) patch_data.image_data = replace_image.value;
 			if( title.value !== item.title ) patch_data.title = title.value;
 			if( description.value !== item.description ) patch_data.description = description.value;
+			if( finished.value != item.finished ) patch_data.finished = finished.value;
 
 			await patchItem(id, patch_data);
 
-			router.push({name:"LeftoverItem",params:{id}} );
+			if( patch_data.finished ) router.push({name:"Home"} );
+			else router.push({name:"LeftoverItem",params:{id}} );
 		}
 
 		return {

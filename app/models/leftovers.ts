@@ -8,6 +8,7 @@ export type Leftover = {
 	start_date: Date,
 	spoil_date : Date,
 	last_update: Date,
+	finished: boolean,
 	proxy_id: string,
 }
 
@@ -38,7 +39,7 @@ type insertData = {
 	start_date: Date,
 	spoil_date: Date,
 	image:string,
-	finished: boolean,
+	finished: boolean,	// obviously false?
 	proxy_id: string
 }
 export async function insert(data:insertData):Promise<number> {
