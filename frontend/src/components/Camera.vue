@@ -1,8 +1,8 @@
 <template>
 	<div>
 		<div class="camera-box">  
-			<video v-show="capture_mode" ref="camera_elem" :width="width" :height="height" autoplay></video>
-			<canvas v-show="!capture_mode" ref="canvas_elem" :width="width" :height="height"></canvas>
+			<video v-show="capture_mode" ref="camera_elem" autoplay class="w-80 h-80 object-center object-cover"></video>
+			<canvas v-show="!capture_mode" ref="canvas_elem" class="w-80 h-80"></canvas>
 		</div>
 
 		<div class="flex justify-center" v-if="capture_mode">
@@ -43,8 +43,7 @@ export default defineComponent({
 		}
 	},
 	setup(props, context) {
-		const width = ref(400);
-		const height = ref(400);
+		const pic_size = 800;
 		const capture_mode = ref(true);
 		const has_capture = ref(false);
 		const suppress_image = ref(false);
@@ -126,15 +125,21 @@ export default defineComponent({
 			const ctx = canvas_elem.value.getContext('2d');
 			if( ctx == null ) return;
 
+			canvas_elem.value.width = pic_size;
+			canvas_elem.value.height = pic_size;
+
 			if( has_capture.value ) {
-				ctx.drawImage(camera_elem.value, 0, 0, 450, 337.5);
+				const vid_w = camera_elem.value.videoWidth;
+				const vid_h = camera_elem.value.videoHeight;
+				const vid_min = Math.min(vid_w, vid_h);
+				ctx.drawImage(camera_elem.value, (vid_w-vid_min)/2, (vid_h-vid_min)/2, vid_min, vid_min, 0, 0, pic_size, pic_size);
 			}
 			else if( props.image && props.image.complete && !suppress_image.value ) {
-				ctx.drawImage(props.image, 0, 0);
+				ctx.drawImage(props.image, 0, 0, pic_size, pic_size);
 			}
 			else {
 				ctx.fillStyle = '#ddd';
-				ctx.fillRect(0, 0, width.value, height.value);
+				ctx.fillRect(0, 0, pic_size, pic_size);
 			}
 		}
 
@@ -143,7 +148,7 @@ export default defineComponent({
 				canvas_elem.value.toBlob( (b:Blob|null) => {
 					console.log("camera data bloc", b);
 					if( b ) context.emit('imageChanged', {mode:ImageChangeMode.Replace, data:b});
-				}, "image/jpeg", 0.7)
+				}, "image/jpeg", 0.75)
 			}
 			else if( props.image && !suppress_image.value ) {
 				context.emit('imageChanged', {mode:ImageChangeMode.Keep});
@@ -154,7 +159,6 @@ export default defineComponent({
 		}
 
 		return {
-			width, height,
 			suppress_image, toggleSuppressImage,
 			capture_mode, has_capture,
 			camera_elem, canvas_elem,

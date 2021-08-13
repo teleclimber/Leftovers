@@ -1,7 +1,7 @@
 
 <template>
 	<div class="p-4 bg-white">
-		<img :src="image_src" />
+		<img :src="image_src" class="w-80 h-80" />
 		<h2 class="text-lg font-bold">{{item.title}} ({{start_str}}, spoils {{spoil_str}})</h2>
 		<p>{{item.description}}</p>
 		<p>last updated {{last_str}} by {{user.display_name}}</p>
