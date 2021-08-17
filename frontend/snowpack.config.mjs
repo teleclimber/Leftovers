@@ -26,6 +26,53 @@ export default {
 	plugins: [
 		'@snowpack/plugin-vue',
 		'@snowpack/plugin-postcss',
+		// [
+		// 	'snowpack-plugin-hash',
+		// 	// Entirely optional object. Showing default values
+		// 	{ 
+		// 	  // Name of custom tsconfig to use for compiler options passed to TypeScript compiler
+		// 	  //readonly tsConfig?: undefined
+		// 	  // Configured length of your hashes
+		// 	  //readonly hashLength?: number
+		// 	  // Name of file for asset manifest JSON
+		// 	  //readonly assetManifest?: string
+		// 	  //assetManifest: ""
+		// 	  // BaseURL to use to rewrite files being hashed
+		// 	  //readonly baseUrl?: string
+		// 	  // Configure log level of plugin, 'error' | 'info' | 'debug'
+		// 	  //readonly logLevel?: 'info'
+		// 	  logLevel: 'debug',
+		// 	  // If the build succeeds, a file at this path will produce a JSON representing the AST generated
+		// 	  //readonly registryFile?: undefined 
+		// 	  registryFile: 'hashreg.json',
+		// 	  // Defaults the your buildOptions config, but can be used to override.
+		// 	  //readonly sourceMaps?: boolean
+		// 	}
+		// ],
+
+		// [
+		// 	"snowpack-files-hash",
+		// 	{
+		// 		// Path to be treated as absolute in relation to root project for imported assets as absolute. Ex.: "/build"
+		// 		baseUrl: "",
+		// 		// Files will be hashed. Ex.: "js", "css", "png", "svg", "jpg"
+		// 		hashFiles: ["js", "css"],
+		// 		// Files will be excludes
+		// 		exclude: ["snowpack.config.js"],
+		// 		// Lenght of hash
+		// 		hashLength: 6,
+		// 		// Files where to find and replace files that have been hashed
+		// 		searchImportsIn: ["html", "js"],
+		// 	},
+		// ],
+
+		[
+			'snowpack-service-worker-assets',
+			{
+				patterns:['**/*', '!**/*.map', '!**/*.json'],
+				worker: '^sw.*\.js',
+			}
+		]
 	],
 	routes: [
 		{
