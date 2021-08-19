@@ -93,6 +93,7 @@ export async function postNewItem(imageData:Blob|null, title:string, description
 	if( resp === undefined ) {
 		throw new Error("response undefined");
 	}
+	if( !resp.ok ) throw new Error("Post failed: "+resp.statusText);
 
 	const r = await resp.json();
 
@@ -125,8 +126,9 @@ export async function patchItem(id: number, patch:ItemPatchData) {
 
 	formData.append('data', json_blob);
 
-	await fetch('/api/leftovers/'+id, {
+	const resp = await fetch('/api/leftovers/'+id, {
 		method: 'PATCH',
 		body: formData
 	});
+	if( !resp.ok ) throw new Error("Patch failed: "+resp.statusText);
 }

@@ -66,7 +66,14 @@ export default defineComponent({
 		}
 
 		async function save() {
-			const new_id = await postNewItem(image.value, title.value, description.value, days.value, new Date());
+			let new_id :number;
+			try {
+				new_id = await postNewItem(image.value, title.value, description.value, days.value, new Date());
+			}
+			catch(e) {
+				alert(e);
+				return;
+			}
 
 			router.push({name:"LeftoverItem",params:{id:new_id}} );
 		}

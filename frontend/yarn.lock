@@ -3105,10 +3105,10 @@ smart-buffer@^4.1.0:
   resolved "https://registry.yarnpkg.com/smart-buffer/-/smart-buffer-4.2.0.tgz#6e1d71fa4f18c05f7d0ff216dd16a481d0e8d9ae"
   integrity sha512-94hK0Hh8rPqQl2xXc3HsaBoOXKV20MToPkcXvwbISWLEs+64sBq5kFgn2kJDHb1Pry9yrP0dxrCI9RRci7RXKg==
 
-snowpack-service-worker-assets@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/snowpack-service-worker-assets/-/snowpack-service-worker-assets-0.2.0.tgz#3925fea45735e5c4cf35f2d249cb0313370d15b6"
-  integrity sha512-+5R5PAaTje8BzpM36V4yP7L7kFtnyzHwTn82QzuJZm7Rbavm4LyVWX3j+oEn+0zEfg+dagbiJwmiI+57F4+1Wg==
+snowpack-service-worker-assets@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/snowpack-service-worker-assets/-/snowpack-service-worker-assets-0.2.1.tgz#e925aed0fad71850f0dffdf90c76dab84614c722"
+  integrity sha512-jRcI9qahb/q6A6C4v/+cNP2UOZnXBKxfnd3zf4CA3cI+jo6DbCXRu7MXiqFfNVnqXHL+Ms0jxYCPujnwDIL/YA==
   dependencies:
     fast-glob "^3.2.7"
     replace-in-file "^6.2.0"

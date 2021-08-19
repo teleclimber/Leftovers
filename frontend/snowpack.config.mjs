@@ -69,8 +69,8 @@ export default {
 		[
 			'snowpack-service-worker-assets',
 			{
-				patterns:['**/*', '!**/*.map', '!**/*.json'],
-				worker: '^sw.*\.js',
+				patterns:['**/*', '!**/*.map', '!sw.js', '!**/*.json'],
+				worker: 'sw.js',
 			}
 		]
 	],

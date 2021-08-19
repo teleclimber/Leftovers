@@ -119,7 +119,13 @@ export default defineComponent({
 			if( description.value !== item.description ) patch_data.description = description.value;
 			if( finished.value != item.finished ) patch_data.finished = finished.value;
 
-			await patchItem(id, patch_data);
+			try {
+				await patchItem(id, patch_data);
+			}
+			catch(e) {
+				alert(e);
+				return;
+			}
 
 			if( patch_data.finished ) router.push({name:"Home"} );
 			else router.push({name:"LeftoverItem",params:{id}} );
