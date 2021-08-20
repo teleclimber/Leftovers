@@ -1,5 +1,5 @@
 <template>
-	<div class="p-4">
+	<div class="p-4 bg-white">
 		<Camera @imageChanged="imageChanged"></Camera>
 
 		<div class="my-4">
@@ -20,18 +20,18 @@
 			</div>
 		</div>
 
-		<div class="my-4">
+		<div class="mt-4 mb-6">
 			<label for="days" class="block text-sm font-medium text-gray-700">
 				Spoils in {{days}} days
 			</label>
 			<div class="mt-1">
-				<input v-model="days" type="range" id="days" name="days" min="1" max="15" step="1" />
+				<input v-model="days" class="w-full" type="range" id="days" name="days" min="1" max="15" step="1" />
 			</div>
 		</div>
 
 		<div class="flex justify-between">
-			<router-link to="/">Nevermind</router-link>
-			<button @click="save">Save</button>
+			<router-link to="/" class="border border-red-400 text-red-400 px-4 py-2 rounded text-sm uppercase">cancel</router-link>
+			<button @click="save" class="bg-blue-600 text-white px-4 py-2 text-sm uppercase rounded">Save</button>
 		</div>
 
 

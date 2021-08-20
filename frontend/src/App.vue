@@ -16,7 +16,7 @@
 				<CurrentUser></CurrentUser>
 			</div>
 		</header>
-		<main class=relative>
+		<main class="relative bg-gray-200">
 			<UpdateUI></UpdateUI>
 
 			<router-view/>

@@ -1,5 +1,5 @@
 <template>
-	<div class="p-4">
+	<div class="p-4 bg-white">
 		<Camera @imageChanged="imageChanged" :image="cur_image"></Camera>
 	
 		<div class="my-4">
@@ -48,8 +48,8 @@
 		</div -->
 
 		<div class="flex justify-between">
-			<router-link :to="{name:'LeftoverItem', params:{id:id}}">Nevermind</router-link>
-			<button @click="save">Save</button>
+			<router-link :to="{name:'LeftoverItem', params:{id:id}}" class="border border-red-400 text-red-400 px-4 py-2 rounded text-sm uppercase">cancel</router-link>
+			<button @click="save" class="bg-blue-600 text-white px-4 py-2 text-sm uppercase rounded">Save</button>
 		</div>
 	</div>
 </template>
