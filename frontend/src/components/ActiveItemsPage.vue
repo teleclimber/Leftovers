@@ -6,8 +6,9 @@
 		</div>
 		<div v-else class="grid grid-cols-3">
 			<LeftoverListItem v-for="item in leftovers.items" :item="item" :key="item.id"></LeftoverListItem>
-			<div class="col-span-3 h-24">&nbsp;</div>
 		</div>
+
+		<div class="col-span-3 h-24">&nbsp;</div>
 
 		<router-link to="New" class="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full fixed bottom-6 right-6">
 			<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

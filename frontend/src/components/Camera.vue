@@ -4,35 +4,34 @@
 			<video v-show="capture_mode" ref="camera_elem" autoplay class="w-80 h-80 object-center object-cover"></video>
 			<canvas v-show="!capture_mode" ref="canvas_elem" class="w-80 h-80"></canvas>
 		
-
-			<div class="flex justify-center -mt-6 " v-if="capture_mode">
-				<button @click="exitCaptureMode" class="bg-white text-blue-700 border border-blue-700 p-4 rounded-full mr-6">
+			<div class="flex justify-center -mt-7" v-if="capture_mode">
+				<button @click="exitCaptureMode" class="bg-white text-blue-700 border border-blue-700 p-4 rounded-full mr-6 z-10">
 					<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
 					</svg>
 				</button>
-				<button @click="doCapture" class="bg-blue-600 text-white p-4 rounded-full">
+				<button @click="doCapture" class="bg-blue-600 text-white p-4 rounded-full z-10">
 					<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
 					</svg>
 				</button>
 			</div>
-			<div class="flex justify-center -mt-6" v-else>
-				<button v-if="has_capture" @click="clearCapture" class="bg-blue-600 text-white p-4 rounded-full mr-4">
+			<div class="flex justify-center -mt-7" v-else>
+				<button v-if="has_capture" @click="clearCapture" class="bg-blue-600 text-white p-4 rounded-full mr-4 z-10">
 					<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
 					</svg>
 				</button>
-				<button v-else-if="image && suppress_image" @click="toggleSuppressImage" class="h-14 w-14 rounded-full overflow-hidden mr-4">
+				<button v-else-if="image && suppress_image" @click="toggleSuppressImage" class="h-14 w-14 rounded-full overflow-hidden mr-4 z-10">
 					<img :src="image.src" class="object-cover">
 				</button>
-				<button v-else-if="image && !suppress_image" @click="toggleSuppressImage" class="bg-blue-600 text-white p-4 rounded-full mr-4">
+				<button v-else-if="image && !suppress_image" @click="toggleSuppressImage" class="bg-blue-600 text-white p-4 rounded-full mr-4 z-10">
 					<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
 					</svg>
 				</button>
-				<button @click="enterCaptureMode" class="bg-white text-blue-700 border border-blue-700 p-4 rounded-full">
+				<button @click="enterCaptureMode" class="bg-white text-blue-700 border border-blue-700 p-4 rounded-full z-10">
 					<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />

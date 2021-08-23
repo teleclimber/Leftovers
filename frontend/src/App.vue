@@ -16,8 +16,8 @@
 				<CurrentUser></CurrentUser>
 			</div>
 		</header>
-		<main class="relative bg-gray-200">
-			<UpdateUI></UpdateUI>
+		<main class="relative">
+			<UpdateApp></UpdateApp>
 
 			<router-view/>
 		</main>
@@ -31,14 +31,14 @@
 import { defineComponent, reactive } from "vue";
 
 import CurrentUser from './components/CurrentUser.vue';
-import UpdateUI from './components/Update.vue';
+import UpdateApp from './components/UpdateApp.vue';
 import RequestErrorOverlay from './components/RequestErrorOverlay.vue';
 
 export default defineComponent({
 	name: "App",
 	components: {
 		CurrentUser,
-		UpdateUI,
+		UpdateApp,
 		RequestErrorOverlay
 	},
 });

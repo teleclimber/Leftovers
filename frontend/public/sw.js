@@ -1,3 +1,18 @@
+// Now we have changed our frontend so we have different assets.
+// How to deal?
+// -> leav as is: OK because apparently addAll reloads everything even if it's already in the cache.
+//    ..except this might break running clients
+// -> increment static cache to v2:
+// -> iterate over array of things to cache, load if not in cache, then delete from cache things that are not in array
+//    ..more complicated, but may save some data
+//    .. also need to always reload index.html in these cases.
+//    -> Also this can potentially break running clients that are still on the older sw.
+
+// Hang on! new service worker installed only if sw is byte-different.
+// so if none of our sw code changes, and the asset names haven't changed
+// then sw will not get reloaded!
+// -> in future, the hashed filenames in addAll() naturally corrects this problem.
+
 const STATIC_CACHE = 'static-v1';
 const DATA_CACHE = 'data-v1';
 
@@ -6,7 +21,7 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('activate', function (event) {
-	event.waitUntil(removeOldCaches());
+	event.waitUntil(removeOldCaches());	// why are we waiting? Just activate.
 });
 
 async function cacheAssets() {
@@ -23,6 +38,13 @@ async function removeOldCaches() {
 			.map( k => caches.delete(k) )
 	);
 }
+
+self.addEventListener('message', (event) => {
+	if (event.data && event.data.type === 'SKIP_WAITING') {
+		console.log("calling skip waiting from SW");
+		self.skipWaiting();
+	}
+});
 
 // so now the qeustion is do we try to just cache all requests,
 // or do we have a laser-focused attempt to fully cache current items?
@@ -75,6 +97,8 @@ self.addEventListener('fetch', (event) => {
 		// When we have filenames with hashes then "/" (index) is mutable,
 		// and so is sw.js and manifest.json so it can be updated
 		// everything else immutable
+		// Actually consider index, etc as cache-then-revalidate, so it loads quicly?
+		// Or could even cache index as immutable, since a new sw would load it into a new cache anyways
 	}
 });
 

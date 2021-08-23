@@ -1,17 +1,11 @@
 import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
+import SWReg from './sw_registration';
 
 import './assets/tailwind.css';
 
-if ('serviceWorker' in navigator) {
-	navigator.serviceWorker.register("/sw.js").then( (reg) => {
-		console.log("service worker registration: ", reg);
-	});
-}
-else {
-	console.log("no serviceWorker in navigator");
-}
+SWReg.register();
 
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
