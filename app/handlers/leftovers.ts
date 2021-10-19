@@ -1,6 +1,6 @@
-import * as path from "https://deno.land/std@0.97.0/path/mod.ts";
-import type {ServerRequest, Response} from "https://deno.land/std@0.97.0/http/server.ts";
-import { MultipartReader, FormFile } from "https://deno.land/std@0.97.0/mime/multipart.ts";
+import * as path from "https://deno.land/std@0.106.0/path/mod.ts";
+import type {ServerRequest, Response} from "https://deno.land/std@0.106.0/http/server.ts";
+import { MultipartReader } from "https://deno.land/std@0.106.0/mime/multipart.ts";
 import type { Context} from '@dropserver/app-router.ts';
 import Metadata from '@dropserver/ds-metadata.ts';
 import Users from '@dropserver/appspace-users.ts';
@@ -144,7 +144,10 @@ async function getUploaded(req:ServerRequest) : Promise<ItemData|undefined> {
 	const formData = await reader.readForm(10 << 20);	// TODO: improve max memory
 
 	let ret :ItemData = {image_mode:''};
-	for (let [key, value] of formData.entries()) {
+	for (let [key, values] of formData.entries()) {
+		if( values === undefined ) throw new Error("Did not expect undefined value for key: "+key);
+		if( values.length !== 1 ) throw new Error("Should only be one value for multipart key: "+key);
+		const value = values[0];
 		if( Array.isArray(value) ) throw new Error("Did not expect an array. key: "+key);
 		if( typeof value === 'string' ) throw new Error("Did not expect an string. key: "+key);
 		if( value?.content === undefined ) throw new Error("no file data in content");

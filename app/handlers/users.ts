@@ -1,4 +1,4 @@
-import type {Response} from "https://deno.land/std@0.97.0/http/server.ts";
+import type {Response} from "https://deno.land/std@0.106.0/http/server.ts";
 import type {Context} from '@dropserver/app-router.ts';
 import Users from '@dropserver/appspace-users.ts';
 

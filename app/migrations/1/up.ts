@@ -1,4 +1,4 @@
-import * as path from "https://deno.land/std@0.97.0/path/mod.ts";
+import * as path from "https://deno.land/std@0.106.0/path/mod.ts";
 import Metadata from '@dropserver/ds-metadata.ts';
 import {createDatabase} from '@dropserver/appspace-database.ts';
 

@@ -1,5 +1,5 @@
 {
 	"imports": {
-		"@dropserver/":"../DropServer/resources/"
+		"@dropserver/":"../DropServer/denosandboxcode/"
 	}
 }
