@@ -20,32 +20,44 @@
 			</div>
 		</div>
 
-		<div class="my-4 text-lg">
-			<label class="">
+		<div v-if="!show_more" class="my-4 flex justify-center">
+			<label class="bg-yellow-300 py-3 px-6 rounded-full text-yellow-900">
 				<input v-model="finished" type="checkbox" id="finished" name="finished" />
-				Finished
+				<span class="text-lg pl-1">Finished</span>
 			</label>
 		</div>
 
-		<!-- maybe put what's below in an expanding section -->
-
-		<!-- div class="my-4">
+		<div v-if="!show_more" @click.stop.prevent="show_more = true" class="border-b mt-4 mb-8 text-sm text-gray-500 flex justify-between">
+			<span>Edit dates...</span>
+			<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+				<path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+			</svg>
+		</div>
+		
+		<div v-if="show_more" class="my-4">
 			<label for="start_date" class="block text-sm font-medium text-gray-700">
 				Start Date:
 			</label>
 			<div class="mt-1">
-				<input v-model="start_date" type="date" id="start_date" name="start_date" />
+				<input v-model="start_date" type="date" id="start_date" name="start_date" class="w-full shadow-sm border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 rounded-md" />
 			</div>
-		</ -->
+		</div>
 
-		<!--div class="my-4">
+		<div v-if="show_more" class="my-4">
 			<label for="days" class="block text-sm font-medium text-gray-700">
-				Spoils {{days}} days after start day
+				Spoils {{days_to_spoil}} days after start day
 			</label>
 			<div class="mt-1">
-				<input v-model="days" type="range" id="days" name="days" min="1" max="15" step="1" />
+				<input v-model="days_to_spoil" class="w-full" type="range" id="days" name="days" min="1" max="15" step="1" />
 			</div>
-		</div -->
+		</div>
+
+		<div v-if="show_more" @click.stop.prevent="show_more = false" class="border-b mt-4 mb-8 text-sm text-gray-500 flex justify-between">
+			<span>Hide dates</span>
+			<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+				<path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
+			</svg>
+		</div>
 
 		<div class="flex justify-between">
 			<router-link :to="{name:'LeftoverItem', params:{id:id}}" class="border border-red-400 text-red-400 px-4 py-2 rounded text-sm uppercase">cancel</router-link>
@@ -58,6 +70,8 @@
 import { defineComponent, PropType, ref, Ref, reactive } from "vue";
 import { ItemPatchData, LeftoverItem, ImageChangeMode } from '../models/leftovers';
 import router from '../router/index';
+import dayjs from 'dayjs';
+import { getDateAfterDays, getDaysBetween } from '../utils/dates';
 import Camera from './Camera.vue';
 import {patchItem} from '../models/leftovers';
 
@@ -79,26 +93,30 @@ export default defineComponent({
 
 		const title = ref("");
 		const description = ref("");
-		const days = ref(5);
+		const start_date = ref("");
+		const days_to_spoil = ref(5);
 		const cur_image :Ref<Image|undefined> = ref();
 		const image_change = ref(ImageChangeMode.Keep);
 		const replace_image :Ref<Blob|null> = ref(null);
 
 		const finished = ref(false);
 
+		const show_more = ref(false);
+
 		item.fetch(id).then( () => {
 			title.value = item.title;
 			description.value = item.description;
-			// start date?
-			// spoil date? How do we deal with that?
-			// image, needs to be passed to camera?
+			start_date.value = dayjs(item.start_date).format("YYYY-MM-DD");
+			days_to_spoil.value = getDaysBetween(item.start_date, item.spoil_date);
+
+			// image, needs to be passed to camera
 			if( item.image ) {
 				cur_image.value = new Image();
 				cur_image.value.src = "/images/"+item.image;
 			}
 			
 			finished.value = item.finished;
-		})
+		});
 
 		async function imageChanged(ev:any) {
 			image_change.value = ev.mode;
@@ -119,6 +137,14 @@ export default defineComponent({
 			if( description.value !== item.description ) patch_data.description = description.value;
 			if( finished.value != item.finished ) patch_data.finished = finished.value;
 
+			if( start_date.value && start_date.value !== dayjs(item.start_date).format("YYYY-MM-DD") ) {
+				patch_data.start_date = dayjs(start_date.value).add(12, 'hour').toDate();
+				patch_data.spoil_date = getDateAfterDays( patch_data.start_date, days_to_spoil.value );
+			}
+			else if( days_to_spoil.value !== getDaysBetween(item.start_date, item.spoil_date) ) {
+				patch_data.spoil_date = getDateAfterDays(item.start_date, days_to_spoil.value );
+			}
+
 			try {
 				await patchItem(id, patch_data);
 			}
@@ -132,8 +158,8 @@ export default defineComponent({
 		}
 
 		return {
-			title, description, days, cur_image, finished,
-			imageChanged, save
+			title, description, start_date, days_to_spoil, cur_image, finished,
+			imageChanged, show_more, save
 		}
 	}
 

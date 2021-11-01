@@ -61,7 +61,7 @@ export type UpdateData = {
 	finished?: boolean,
 	proxy_id: string
 }
-const update_keys = ["proxy_id", 'title', 'description', 'finished']
+const update_keys = ["proxy_id", 'title', 'description', 'finished', 'start_date', 'spoil_date']
 export async function update(id:number, data:UpdateData) {
 	const db = new Database('leftoversdb');
 

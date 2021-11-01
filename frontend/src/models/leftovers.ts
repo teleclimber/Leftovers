@@ -1,6 +1,8 @@
 import ax from '../axios';
 import dayjs from 'dayjs';
 
+import { getDateAfterDays } from '../utils/dates';
+
 import type {ItemData} from '../../../app/handlers/leftovers';
 
 export enum ImageChangeMode {
@@ -65,14 +67,11 @@ export async function postNewItem(imageData:Blob|null, title:string, description
 	const formData = new FormData();
 	if( imageData !== null ) formData.append('image', imageData);
 
-	const spoil_date = new Date(start_date.valueOf());
-	spoil_date.setDate(spoil_date.getDate() + Number(days_to_spoil))
-
 	const json = JSON.stringify({
 		title,
 		description,
 		start_date,
-		spoil_date
+		spoil_date:getDateAfterDays(start_date, days_to_spoil)
 	});
 	const json_blob = new Blob([json], {
 		type: 'application/json'
@@ -105,8 +104,8 @@ export type ItemPatchData = {
 	image_data?:Blob,
 	title?:string,
 	description?:string,
-	//start_date:Date,
-	//days_to_spoil:number,	// maybe calculate that in UI and use a date here
+	start_date?: Date,
+	spoil_date?: Date,
 	finished?: boolean
 }
 export async function patchItem(id: number, patch:ItemPatchData) {
