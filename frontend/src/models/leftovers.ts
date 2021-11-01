@@ -54,7 +54,7 @@ export class LeftoverItems {
 			this.items.push(leftover);
 		});
 		// sort to oldest first
-		this.items.sort((a, b) => dayjs(a.start_date).isBefore(dayjs(b.start_date)) ? -1 : 1);
+		this.items.sort((a, b) => dayjs(a.spoil_date).isBefore(dayjs(b.spoil_date)) ? -1 : 1);
 		this.loaded = true;
 	}
 
