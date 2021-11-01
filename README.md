@@ -1,6 +1,6 @@
 # Leftovers
 
-*Leftovers* is a [Dropserver](https://www.dropserver.org) app that helps you keep track of leftovers and perishables in your refrigerator.
+*Leftovers* is a [Dropserver](https://dropserver.org) app that helps you keep track of leftovers and perishables in your refrigerator.
 
 When you are about to put Leftovers in the fridge, opent he Leftovers app and hit the "+" to create a new leftover. Snap a pic with the integrated camera, describe the contents and set a time until it's considered spoiled.
 
@@ -19,4 +19,6 @@ The app is quite usable, though it has some bugs and missing features.
 
 Dropserver is very new therefore you will probably need some help using this for now. Have a look at the [discussions in the Dropserver repo](https://github.com/teleclimber/Dropserver/discussions).
 
-## 
+## License
+
+MIT Licensed.
