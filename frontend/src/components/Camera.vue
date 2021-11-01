@@ -124,7 +124,7 @@ export default defineComponent({
 				if( camera_elem.value == null ) throw new Error("camera elem is null");
 				camera_elem.value.srcObject = stream;
 			} catch(err) {
-				alert("Maybe the browser didn't support this op or there are errors.");
+				// Sometimes this can happen if the user leaves the page quickly after landing on it.
 				console.error(err);
 			}
 		}
