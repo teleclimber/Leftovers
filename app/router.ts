@@ -26,6 +26,10 @@ r.add("get", {path:"/avatars", end: false}, authorizedOnly, r.staticFileHandler(
 
 // frontend. if bare path then serve index
 r.add("get", "/", authorizedOnly, r.staticFileHandler({path:'@app/frontend/index.html'}));
+// For now, frontend routes that should serve the app are manualy added here:
+r.add("get", {path:"/new", end:false}, authorizedOnly, r.staticFileHandler({path:'@app/frontend/index.html'}));
+r.add("get", {path:"/leftovers", end:false}, authorizedOnly, r.staticFileHandler({path:'@app/frontend/index.html'}));
+// serve static frontend assets:
 r.add("get", {path:"/", end:false}, authorizedOnly, r.staticFileHandler({path:'@app/frontend/'}));
 // !! We'll need a way to send index.hml if no file found.
 
