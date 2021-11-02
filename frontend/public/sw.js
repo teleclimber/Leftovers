@@ -13,7 +13,7 @@
 // then sw will not get reloaded!
 // -> in future, the hashed filenames in addAll() naturally corrects this problem.
 
-const STATIC_CACHE = 'static-v1';
+const STATIC_CACHE = 'static-v3';
 const DATA_CACHE = 'data-v1';
 
 self.addEventListener('install', (event) => {
@@ -67,12 +67,14 @@ async function cacheCurrentLeftovers() {
 
 // ^^ OK but need to delete old images or this is just going to grow and grow.
 
-// then you also need to take advantage of that cache
+// These should be considered as static, yet should be treated as mutable.
+// Because: they serve the app index or the service worker, manifest, or favicon.
+// ...which should always be fresh (to enable updated)
+const mutable_static = ["/new", "/leftovers", "/sw.js", "/manifest.json", "/favicon.ico"];
 
 self.addEventListener('fetch', (event) => {
-	
 	const u = new URL(event.request.url);
-	const p = u.pathname;
+	const p = u.pathname.toLowerCase();
 	const m = event.request.method;
 
 	if( u.protocol !== 'http:' && u.protocol !== 'https:' ) {
@@ -83,43 +85,41 @@ self.addEventListener('fetch', (event) => {
 		event.respondWith(handleMutation(event));
 	}
 	else if( p.startsWith('/api/') ) {
-		event.respondWith(fetchMutable(event));
+		event.respondWith(fetchMutable(event, DATA_CACHE));
 	}
 	else if( p.startsWith('/images') ) {
-		event.respondWith(fetchImmutable(event));
+		event.respondWith(fetchImmutable(event, DATA_CACHE));
 	}
 	else if( p.startsWith('/avatars') ) {
-		event.respondWith(fetchImmutable(event));
+		event.respondWith(fetchImmutable(event, DATA_CACHE));
+	}
+	else if( mutable_static.find( ms => p.startsWith(ms) ) ) {
+		event.respondWith(fetchMutable(event, STATIC_CACHE));
 	}
 	else {
-		// for now assume all mutable.
-		event.respondWith(fetchMutable(event));
-		// When we have filenames with hashes then "/" (index) is mutable,
-		// and so is sw.js and manifest.json so it can be updated
-		// everything else immutable
-		// Actually consider index, etc as cache-then-revalidate, so it loads quicly?
-		// Or could even cache index as immutable, since a new sw would load it into a new cache anyways
+		event.respondWith(fetchImmutable(event, STATIC_CACHE));
 	}
 });
 
 // Note for below: fetch rejects promise when "network error" occurs.
 // Which includes apparently a dead server (makes sense)
 
-async function fetchImmutable(event) {
-	const cache = await caches.open(DATA_CACHE);
+async function fetchImmutable(event, cache_name) {
+	const cache = await caches.open(cache_name);
 	let resp = await cache.match(event.request);
 	if( resp ) return resp;
 	try {
 		resp = await fetch(event.request);
 	}
 	catch(e) {
+		// actually it could be a 404, or something else?
 		return new Response(null, {status:503, statusText: "Failed to reach server"});
 	}
 	if( resp.ok ) cache.put(event.request, resp.clone());
 	return resp;
 }
 
-async function fetchMutable(event) {
+async function fetchMutable(event, cache_name) {
 	let resp;
 	let req_fail = false;
 	try {
@@ -128,7 +128,7 @@ async function fetchMutable(event) {
 	catch(e) {
 		req_fail = true;
 	}
-	const cache = await caches.open(DATA_CACHE);
+	const cache = await caches.open(cache_name);
 	if( !req_fail && resp && resp.ok ) {
 		cache.put(event.request, resp.clone());
 		return resp;
