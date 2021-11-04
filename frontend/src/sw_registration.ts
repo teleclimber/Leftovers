@@ -30,6 +30,7 @@ class swr {
 
 	register() {
 		register( '/sw.js', {
+			registrationOptions: { scope: '/' },
 			ready: (registration) => {
 				console.log('Service worker is active.', registration);
 				this.registration.value = registration;

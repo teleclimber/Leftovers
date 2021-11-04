@@ -21,7 +21,7 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('activate', function (event) {
-	event.waitUntil(removeOldCaches());	// why are we waiting? Just activate.
+	event.waitUntil(removeOldCaches());
 });
 
 async function cacheAssets() {
@@ -62,7 +62,7 @@ async function cacheCurrentLeftovers() {
 
 	// prolly need to cache users or somesuch
 
-	return Promise.all(cache.put(url, resp), cache.addAll(img_urls));
+	return Promise.all([cache.put(url, resp), cache.addAll(img_urls)]);
 }
 
 // ^^ OK but need to delete old images or this is just going to grow and grow.
