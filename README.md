@@ -10,7 +10,6 @@ The main page shows all your current leftovers, making it easy to see what shoul
 
 - 100% self-contained
 - makes zero requests outside your appspace
-- 100% private routes
 - multi-user
 
 ## Current status
