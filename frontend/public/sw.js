@@ -70,7 +70,7 @@ async function cacheCurrentLeftovers() {
 // These should be considered as static, yet should be treated as mutable.
 // Because: they serve the app index or the service worker, manifest, or favicon.
 // ...which should always be fresh (to enable updated)
-const mutable_static = ["/new", "/leftovers", "/sw.js", "/manifest.json", "/favicon.ico"];
+const mutable_static = ["/new", "/leftovers", "/sw.js", "/manifest.json", "/favicon.ico", "/img/icons/"];
 
 self.addEventListener('fetch', (event) => {
 	const u = new URL(event.request.url);

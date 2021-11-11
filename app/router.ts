@@ -4,6 +4,7 @@ import {getCurrentUser, getUser} from './handlers/users.ts';
 
 const r = new AppRouter;
 
+const publicRoute = {allow:AuthAllow.public};
 const authorizedOnly = {allow:AuthAllow.authorized};
 const createAuth = {allow:AuthAllow.authorized, permissions:"create"}
 
@@ -29,6 +30,8 @@ r.add("get", "/", authorizedOnly, r.staticFileHandler({path:'@app/frontend/index
 // For now, frontend routes that should serve the app are manualy added here:
 r.add("get", {path:"/new", end:false}, authorizedOnly, r.staticFileHandler({path:'@app/frontend/index.html'}));
 r.add("get", {path:"/leftovers", end:false}, authorizedOnly, r.staticFileHandler({path:'@app/frontend/index.html'}));
+// serve pwa icons using public routes (sadly) because credentials are not sent
+r.add("get", {path:"/img/icons/", end: false}, publicRoute, r.staticFileHandler({path:'@app/frontend/img/icons/'}));
 // serve static frontend assets:
 r.add("get", {path:"/", end:false}, authorizedOnly, r.staticFileHandler({path:'@app/frontend/'}));
 // !! We'll need a way to send index.hml if no file found.
