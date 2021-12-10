@@ -81,6 +81,9 @@ self.addEventListener('fetch', (event) => {
 		console.log("fetching directly because protocol not recognized: "+u.protocol);
 		event.respondWith(fetch(event.request));
 	}
+	else if( p.startsWith('/dropserver-dev/') ) {
+		event.respondWith(fetch(event.request));
+	}
 	else if( m === 'POST' || m === 'PATCH' ) {
 		event.respondWith(handleMutation(event));
 	}
