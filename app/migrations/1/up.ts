@@ -1,13 +1,13 @@
 import * as path from "https://deno.land/std@0.106.0/path/mod.ts";
 import Metadata from '@dropserver/ds-metadata.ts';
-import {createDatabase} from '@dropserver/appspace-database.ts';
+import {getCreateDB} from '../../db.ts';
 
 export default async function() {
 	console.log("creating db");
-	const db = await createDatabase("leftoversdb");
+	const db = getCreateDB();
 
 	console.log("creating table");
-	await db.exec(`CREATE TABLE "leftovers" (
+	db.query(`CREATE TABLE "leftovers" (
 			"id" INTEGER PRIMARY KEY ASC,
 			"title" TEXT,
 			"description" TEXT,
@@ -19,7 +19,9 @@ export default async function() {
 		)`);
 
 	console.log("creating index");
-	await db.exec(`CREATE INDEX active ON leftovers (spoil_date, finished)`)
+	db.query(`CREATE INDEX active ON leftovers (spoil_date, finished)`);
+
+	db.close();
 
 	// create a dir for the images:
 	const images_path = path.join(Metadata.appspace_path, 'images');
