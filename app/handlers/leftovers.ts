@@ -1,9 +1,8 @@
 import * as path from "https://deno.land/std@0.106.0/path/mod.ts";
 import type {ServerRequest, Response} from "https://deno.land/std@0.106.0/http/server.ts";
 import { MultipartReader } from "https://deno.land/std@0.106.0/mime/multipart.ts";
-import type { Context} from '@dropserver/app-router.ts';
-import Metadata from '@dropserver/ds-metadata.ts';
-import Users from '@dropserver/appspace-users.ts';
+import type { Context} from 'https://deno.land/x/dropserver_app/routes.ts';
+import {appspace} from '../app.ts'; 
 
 import {insert, update, getByID, getActive}  from '../models/leftovers.ts';
 import type {Leftover, UpdateData} from '../models/leftovers.ts';
@@ -53,7 +52,7 @@ export async function getLeftoverItem(ctx:Context) {
 }
 
 export async function postLeftoverItem(ctx:Context) {
-	if( ctx.proxy_id === null ) throw new Error("got a null proxy_id in postLeftoverItem");
+	if( ctx.proxyId === null ) throw new Error("got a null proxy_id in postLeftoverItem");
 
 	const req = ctx.req;
 	const form_data = await getUploaded(req);
@@ -75,7 +74,7 @@ export async function postLeftoverItem(ctx:Context) {
 		spoil_date: form_data.spoil_date,
 		image: form_data.image || '',
 		finished: false,
-		proxy_id: ctx.proxy_id
+		proxy_id: ctx.proxyId
 	}
 
 	const new_id = await insert(ins_data);
@@ -92,7 +91,7 @@ export async function postLeftoverItem(ctx:Context) {
 
 
 export async function patchLeftoverItem(ctx:Context) {
-	if( ctx.proxy_id === null ) throw new Error("got a null proxy_id in postLeftoverItem");
+	if( ctx.proxyId === null ) throw new Error("got a null proxy_id in postLeftoverItem");
 
 	const req = ctx.req;
 	const form_data = await getUploaded(req);
@@ -108,7 +107,7 @@ export async function patchLeftoverItem(ctx:Context) {
 
 	const update_data:UpdateData = {
 		image_mode: '',
-		proxy_id: ctx.proxy_id
+		proxy_id: ctx.proxyId
 	};
 	Object.assign( update_data, form_data);
 
@@ -154,7 +153,7 @@ async function getUploaded(req:ServerRequest) : Promise<ItemData|undefined> {
 
 		if( key === 'image' ) {
 			ret.image = makeImageFilename();
-			const p = path.join(Metadata.appspace_path, 'images', ret.image);
+			const p = appspace.path(path.join('images', ret.image));
 			await Deno.writeFile(p, value.content!)
 		} else if (key === 'data') {
 			const json_str = new TextDecoder().decode(value.content);
@@ -172,18 +171,6 @@ function makeImageFilename() :string {
 	const a=new Uint16Array(1);
 	crypto.getRandomValues(a);
 	return dateStr(new Date()) + '-' + a[0].toString(16)+'.jpg';
-}
-
-export async function archiveRoute(req:ServerRequest) {
-	let display_name = 'Miss Terious';
-
-	const user_id = req.headers.get('user-id');
-	if( user_id ) {
-		const u = await Users.getUser(user_id);
-		display_name = u.display_name;
-	}
-
-	req.respond({status:200, body:"<h1>Archive Successful</h1><p>Thank you "+escapeHtml(display_name)+"! <a href=\"/\">Go back</a>"});
 }
 
 // https://stackoverflow.com/questions/6234773/can-i-escape-html-special-chars-in-javascript

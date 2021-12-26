@@ -1,5 +1,5 @@
 {
 	"imports": {
-		"@dropserver/":"../DropServer/denosandboxcode/"
+		"https://deno.land/x/dropserver_app/":"../dropserver_app/"
 	}
 }
