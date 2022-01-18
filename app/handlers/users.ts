@@ -1,13 +1,12 @@
-import type {Response} from "https://deno.land/std@0.106.0/http/server.ts";
-import type {Context} from 'https://deno.land/x/dropserver_app/routes.ts';
-import {appspace} from '../app.ts';
+import type {Context, Response} from '../deps.ts';
+import app from '../app.ts';
 
 export async function getCurrentUser(ctx:Context) {
 	if( ctx.proxyId === null ) {
 		ctx.req.respond({status:204});	// 204 "no content" 
 		return;
 	}
-	const user = await appspace.users.get(ctx.proxyId);	// Don't love this because it implies we're dealing with "app". It should be "appspace"?
+	const user = await app.getUser(ctx.proxyId);	// Don't love this because it implies we're dealing with "app". It should be "appspace"?
 
 	const headers = new Headers;
 	headers.set('Content-Type', 'application/json');
@@ -25,7 +24,7 @@ export async function getUser(ctx:Context) {
 		ctx.req.respond({status:400, body:"no proxy_id"});
 		return;
 	}
-	const user = await appspace.users.get(params.proxy_id);
+	const user = await app.getUser(params.proxy_id);
 
 	const headers = new Headers;
 	headers.set('Content-Type', 'application/json');
@@ -40,8 +39,7 @@ export async function getUser(ctx:Context) {
 // Leftovers app typical use case includes only a handful of users 
 // so send all users in one handler and be done with it.
 export async function getAllUsers(ctx:Context) {
-	const u = await appspace.users.getAll();
-
+	const u = await app.getUsers();
 	const headers = new Headers;
 	headers.set('Content-Type', 'application/json');
 	const resp: Response = {

@@ -1,8 +1,6 @@
-import * as path from "https://deno.land/std@0.106.0/path/mod.ts";
-import type {ServerRequest, Response} from "https://deno.land/std@0.106.0/http/server.ts";
-import { MultipartReader } from "https://deno.land/std@0.106.0/mime/multipart.ts";
-import type { Context} from 'https://deno.land/x/dropserver_app/routes.ts';
-import {appspace} from '../app.ts'; 
+import {path, MultipartReader} from "../deps.ts";
+import type {ServerRequest, Response, Context} from "../deps.ts";
+import app from '../app.ts'; 
 
 import {insert, update, getByID, getActive}  from '../models/leftovers.ts';
 import type {Leftover, UpdateData} from '../models/leftovers.ts';
@@ -153,7 +151,7 @@ async function getUploaded(req:ServerRequest) : Promise<ItemData|undefined> {
 
 		if( key === 'image' ) {
 			ret.image = makeImageFilename();
-			const p = appspace.path(path.join('images', ret.image));
+			const p = app.appspacePath(path.join('images', ret.image));
 			await Deno.writeFile(p, value.content!)
 		} else if (key === 'data') {
 			const json_str = new TextDecoder().decode(value.content);
