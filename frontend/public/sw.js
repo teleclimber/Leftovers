@@ -13,7 +13,7 @@
 // then sw will not get reloaded!
 // -> in future, the hashed filenames in addAll() naturally corrects this problem.
 
-const STATIC_CACHE = 'static-v3';
+const STATIC_CACHE = 'static-v4';
 const DATA_CACHE = 'data-v1';
 
 self.addEventListener('install', (event) => {
