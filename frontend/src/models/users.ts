@@ -20,13 +20,13 @@ export class User {
 
 	proxy_id: string = "";
 	permissions: string[] = [];
-	display_name: string = "";
+	displayName: string = "";
 	avatar: string = "";
 
 	setFromRaw(raw :any) {
-		this.proxy_id = raw.proxy_id+'';
+		this.proxy_id = raw.proxyId+'';
 		this.permissions = raw.permissions;
-		this.display_name = raw.display_name+'';
+		this.displayName = raw.displayName+'';
 		this.avatar = raw.avatar+'';
 
 		this.loaded = true;
@@ -79,7 +79,7 @@ class Users {
 		// not found, so put it in and fetch
 		const n = reactive(new User);
 		this.by_proxy.set(proxy_id, n);
-		ax.get('/api/users/'+proxy_id).then( (resp) => {
+		ax.get('/api/users/'+proxy_id).then( (resp:any) => {
 			this.ingestRaw(resp.data);
 		});
 		return n;
