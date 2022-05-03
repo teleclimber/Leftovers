@@ -47,6 +47,8 @@ class Users {
 	by_proxy: Map<string,User> = new Map;
 	current: User = new User;
 
+	authenticated = true;
+
 	async fetchAll() {
 		const resp = await ax.get('/api/users');
 		resp.data.forEach( this.ingestRaw );

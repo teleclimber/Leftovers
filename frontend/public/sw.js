@@ -13,7 +13,7 @@
 // then sw will not get reloaded!
 // -> in future, the hashed filenames in addAll() naturally corrects this problem.
 
-const STATIC_CACHE = 'static-v4';
+const STATIC_CACHE = 'static-v5';
 const DATA_CACHE = 'data-v1';
 
 self.addEventListener('install', (event) => {
@@ -115,8 +115,12 @@ async function fetchImmutable(event, cache_name) {
 		resp = await fetch(event.request);
 	}
 	catch(e) {
-		// actually it could be a 404, or something else?
+		// This kicks in when there is a security error, or if server fails to respond
 		return new Response(null, {status:503, statusText: "Failed to reach server"});
+	}
+	// If Unauthorized or forbidden, pass through to frontend so it can alert user
+	if( resp.status == 401 || resp.status == 403 ){
+		return resp;
 	}
 	if( resp.ok ) cache.put(event.request, resp.clone());
 	return resp;
@@ -131,8 +135,12 @@ async function fetchMutable(event, cache_name) {
 	catch(e) {
 		req_fail = true;
 	}
+	// If Unauthorized or forbidden, pass through to frontend so it can alert user
+	if( !req_fail && resp.status == 401 || resp.status == 403 ){
+		return resp;
+	}
 	const cache = await caches.open(cache_name);
-	if( !req_fail && resp && resp.ok ) {
+	if( !req_fail && resp.ok ) {
 		cache.put(event.request, resp.clone());
 		return resp;
 	}

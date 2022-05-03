@@ -1,5 +1,6 @@
 import {reactive } from 'vue';
 import axios from 'axios';
+import {ReactiveUsers} from './models/users.ts';
 
 type Err = {
 	method: string,
@@ -22,10 +23,10 @@ ax.interceptors.response.use(function (response) {
 }, function (error) {
 	if( error.response && error.response.status >= 400 ) {
 		const resp = error.response;
-		//if( resp.status == 401 ) user.setUnauthorized();
-		//else if( resp.status != 404 ) {
+		if( resp.status == 401 || resp.status == 403 ) ReactiveUsers.authenticated = false;
+		else {	// if( resp.status != 404 ) {
 			ReqErrStack.push({method:resp.config.method, path:resp.config.url, code: resp.status, message: resp.data});
-		//}
+		}
 	}
 
 	return Promise.reject(error);
