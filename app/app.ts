@@ -1,4 +1,4 @@
-import {createApp} from './deps.ts';
+import {createApp} from 'https://deno.land/x/dropserver_app@v0.2.0/mod.ts';
 
 import createRoutes from './routes.ts';
 

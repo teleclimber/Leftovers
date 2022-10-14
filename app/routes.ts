@@ -1,5 +1,4 @@
-import {RoutesBuilder, AuthAllow} from './deps.ts';
-
+import  {RoutesBuilder, AuthAllow} from 'https://deno.land/x/dropserver_app@v0.2.0/mod.ts';
 import {getLeftoverItems, getLeftoverItem, postLeftoverItem, patchLeftoverItem} from './handlers/leftovers.ts';
 import {getCurrentUser, getUser} from './handlers/users.ts';
 
