@@ -1,4 +1,15 @@
 {
 	"name":	"Leftovers",
-	"version": "0.6.0"
+	"short-description": "Don't let your delicious leftovers go to waste",
+	"version": "0.6.1",
+	"icon": "frontend/img/icons/maskable_icon_x512.png",
+	"accent-color": "rgba(5, 150, 105)",
+	"authors": [{
+		"name": "Olivier Forget",
+		"email": "me@olivierforget.net",
+		"url": "https://olivierforget.net"
+	}],
+	"code": "https://github.com/teleclimber/Leftovers",
+	"changelog": "changelog.txt",
+	"license": "MIT"
 }
