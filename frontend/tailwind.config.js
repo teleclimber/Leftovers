@@ -1,14 +1,14 @@
 module.exports = {
   mode: 'jit',
-  purge: { content: ['./public/**/*.html', './src/**/*.vue'] },
-  darkMode: false, // or 'media' or 'class'
+  content: [
+    './public/**/*.html',
+    './src/**/*.vue'
+  ],
   theme: {
     extend: {},
   },
   variants: {
     extend: {},
   },
-  plugins: [
-    require('@tailwindcss/line-clamp'),
-  ],
+  plugins: [],
 }
