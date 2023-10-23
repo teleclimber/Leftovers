@@ -3,7 +3,16 @@ import dayjs from 'dayjs';
 
 import { getDateAfterDays } from '../utils/dates';
 
-import type {ItemData} from '../../../app/handlers/leftovers';
+// This was copied from: '../../../app/handlers/leftovers';
+type ItemData = {
+	title?: string,
+	description?: string,
+	start_date?: Date,
+	spoil_date?: Date,
+	image_mode: string,
+	image?:string,
+	finished?:boolean
+}
 
 export enum ImageChangeMode {
 	Keep = "keep",

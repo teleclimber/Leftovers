@@ -1,6 +1,6 @@
 import {reactive } from 'vue';
 import axios from 'axios';
-import {ReactiveUsers} from './models/users.ts';
+import {ReactiveUsers} from './models/users';
 
 type Err = {
 	method: string,

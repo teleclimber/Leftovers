@@ -161,7 +161,7 @@ export default defineComponent({
 
 		function emitEvent() {
 			if( has_capture.value ) {
-				canvas_elem.value.toBlob( (b:Blob|null) => {
+				canvas_elem.value?.toBlob( (b:Blob|null) => {
 					console.log("camera data bloc", b);
 					if( b ) context.emit('imageChanged', {mode:ImageChangeMode.Replace, data:b});
 				}, "image/jpeg", 0.75)

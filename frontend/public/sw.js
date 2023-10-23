@@ -27,7 +27,7 @@ self.addEventListener('activate', function (event) {
 async function cacheAssets() {
 	const cache = await caches.open(STATIC_CACHE);
 	await cache.addAll([
-		'snowpack-service-worker-assets'
+		//'snowpack-service-worker-assets'
 	]);
 }
 

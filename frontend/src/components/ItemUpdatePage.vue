@@ -95,9 +95,9 @@ export default defineComponent({
 		const description = ref("");
 		const start_date = ref("");
 		const days_to_spoil = ref(5);
-		const cur_image :Ref<Image|undefined> = ref();
+		const cur_image :Ref<HTMLImageElement|undefined> = ref();
 		const image_change = ref(ImageChangeMode.Keep);
-		const replace_image :Ref<Blob|null> = ref(null);
+		const replace_image :Ref<Blob|undefined> = ref();
 
 		const finished = ref(false);
 
@@ -124,7 +124,7 @@ export default defineComponent({
 				replace_image.value = ev.data;
 			}
 			else {
-				replace_image.value = null;
+				replace_image.value = undefined;
 			} 
 		}
 
