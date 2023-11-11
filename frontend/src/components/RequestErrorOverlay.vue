@@ -1,3 +1,10 @@
+<script setup lang="ts">
+import {ReqErrStack} from '../axios';
+
+const errors = ReqErrStack.errs;
+
+</script>
+
 <template>
 	<div v-if="errors.length !== 0" class="absolute top-0 left-0 w-full z-20 h-screen bg-gray-500 bg-opacity-50 p-4 flex justify-center items-center">
 		<div class="w-full sm:max-w-3xl rounded-md shadow-lg bg-red-100 px-4 sm:px-6 py-5">
@@ -17,24 +24,3 @@
 		</div>
 	</div>
 </template>
-
-<script lang="ts">
-import { defineComponent, computed } from 'vue';
-import {useRoute} from 'vue-router';
-
-import {ReqErrStack} from '../axios';
-
-export default defineComponent({
-	name: 'RequestErrorOverlay',
-	components: {
-		
-	},
-	setup() {
-		
-		return {
-			errors: ReqErrStack.errs,
-		}
-	}
-
-});
-</script>

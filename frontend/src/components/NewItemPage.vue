@@ -1,3 +1,39 @@
+<script setup lang="ts">
+import { ref, Ref } from "vue";
+import router from '../router/index';
+import Camera from './Camera.vue';
+import {postNewItem} from '../models/leftovers';
+import {ImageChangeMode} from '../models/leftovers';
+
+const title = ref("");
+const description = ref("");
+const days = ref(5);
+const image :Ref<Blob|null> = ref(null);
+
+async function imageChanged(ev:any) {
+	if( ev.mode === ImageChangeMode.Replace) {
+		image.value = ev.data;
+	}
+	else {
+		image.value = null;
+	}
+}
+
+async function save() {
+	let new_id :number;
+	try {
+		new_id = await postNewItem(image.value, title.value, description.value, days.value, new Date());
+	}
+	catch(e) {
+		alert(e);
+		return;
+	}
+
+	router.push({name:"LeftoverItem",params:{id:new_id}} );
+}
+
+</script>
+
 <template>
 	<div class="p-4 bg-white">
 		<Camera @imageChanged="imageChanged"></Camera>
@@ -33,56 +69,5 @@
 			<router-link to="/" class="border border-red-400 text-red-400 px-4 py-2 rounded text-sm uppercase">cancel</router-link>
 			<button @click="save" class="bg-blue-600 text-white px-4 py-2 text-sm uppercase rounded">Save</button>
 		</div>
-
-
 	</div>
 </template>
-
-<script lang="ts">
-import { defineComponent, PropType, ref, Ref } from "vue";
-import router from '../router/index';
-import Camera from './Camera.vue';
-import {postNewItem} from '../models/leftovers';
-import {ImageChangeMode} from '../models/leftovers';
-
-export default defineComponent({
-	name: "NewItemPage",
-	components: {
-		Camera
-	},
-	setup() {
-		const title = ref("");
-		const description = ref("");
-		const days = ref(5);
-		const image :Ref<Blob|null> = ref(null);
-
-		async function imageChanged(ev:any) {
-			if( ev.mode === ImageChangeMode.Replace) {
-				image.value = ev.data;
-			}
-			else {
-				image.value = null;
-			}
-		}
-
-		async function save() {
-			let new_id :number;
-			try {
-				new_id = await postNewItem(image.value, title.value, description.value, days.value, new Date());
-			}
-			catch(e) {
-				alert(e);
-				return;
-			}
-
-			router.push({name:"LeftoverItem",params:{id:new_id}} );
-		}
-
-		return {
-			title, description, days,
-			imageChanged, save
-		}
-	}
-
-});
-</script>

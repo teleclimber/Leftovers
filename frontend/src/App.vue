@@ -1,3 +1,12 @@
+<script setup lang="ts">
+import {ReactiveUsers} from './models/users';
+
+import CurrentUser from './components/CurrentUser.vue';
+import UpdateApp from './components/UpdateApp.vue';
+import RequestErrorOverlay from './components/RequestErrorOverlay.vue';
+
+</script>
+
 <template>
 	<!-- div id="nav">
 		<router-link to="/">Home</router-link> |
@@ -33,30 +42,3 @@
 		</div>
 	</div>
 </template>
-
-
-<script lang="ts">
-import { defineComponent, reactive } from "vue";
-
-import {ReactiveUsers} from './models/users';
-
-import CurrentUser from './components/CurrentUser.vue';
-import UpdateApp from './components/UpdateApp.vue';
-import RequestErrorOverlay from './components/RequestErrorOverlay.vue';
-
-export default defineComponent({
-	name: "App",
-	components: {
-		CurrentUser,
-		UpdateApp,
-		RequestErrorOverlay
-	},
-	setup() {
-		return {
-			ReactiveUsers
-		}
-	}
-});
-</script>
-
-

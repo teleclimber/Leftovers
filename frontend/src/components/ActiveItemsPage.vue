@@ -1,3 +1,13 @@
+<script setup lang="ts">
+import { reactive } from "vue";
+import {LeftoverItems} from '../models/leftovers';
+
+import LeftoverListItem from './LeftoverListItem.vue';
+
+const leftovers = reactive(new LeftoverItems)
+leftovers.fetchActive();
+
+</script>
 
 <template>
 	<div>
@@ -19,26 +29,6 @@
 </template>
 
 
-<script lang="ts">
-import { defineComponent, reactive } from "vue";
-import {LeftoverItems} from '../models/leftovers';
 
-import LeftoverListItem from './LeftoverListItem.vue';
-
-export default defineComponent({
-	name: "ActiveItemsPage",
-	components: {
-		LeftoverListItem
-	},
-	setup() {
-		const leftovers = reactive(new LeftoverItems)
-		leftovers.fetchActive();
-
-		return {
-			leftovers,
-		}
-	}
-});
-</script>
 
 

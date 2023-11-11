@@ -1,3 +1,22 @@
+<script setup lang="ts">
+import type { LeftoverItem } from '../models/leftovers';
+import {ReactiveUsers} from '../models/users';
+import dayjs from 'dayjs';
+import {getSpoilData} from '../utils/dates';
+
+const props = defineProps<{
+	item: LeftoverItem
+}>();
+
+const item = props.item;
+const start_str = dayjs(item.start_date).fromNow().replace("ago", "old");
+const spoil = getSpoilData(item.spoil_date);
+		
+const last_str = dayjs(item.last_update).fromNow();
+const image_src = "/images/"+item.image;
+const user = ReactiveUsers.getUser(item.proxy_id);
+
+</script>
 
 <template>
 	<router-link :to="{name:'LeftoverItem', params:{id:item.id}}" class="block bg-gray-800">
@@ -18,44 +37,4 @@
 		<p class="my-2 line-clamp-2">{{item.description}}</p>
 	</router-link>
 </template>
-
-
-<script lang="ts">
-import { defineComponent, PropType, reactive } from "vue";
-import type { LeftoverItem } from '../models/leftovers';
-import {ReactiveUsers} from '../models/users';
-import dayjs from 'dayjs';
-import {getSpoilData} from '../utils/dates';
-
-export default defineComponent({
-	name: "LeftoverListItem",
-	components: {
-		
-	},
-	props: {
-		item: {
-			type: Object as PropType<LeftoverItem>,
-			required: true
-		}
-	},
-	setup(props) {
-		const item = props.item;
-		const start_str = dayjs(item.start_date).fromNow().replace("ago", "old");
-		const spoil = getSpoilData(item.spoil_date);
-				
-		const last_str = dayjs(item.last_update).fromNow();
-		const image_src = "/images/"+item.image;
-		const user = ReactiveUsers.getUser(item.proxy_id);
-
-		return {
-			image_src,
-			start_str,
-			spoil,
-			last_str,
-			user
-		}
-	}
-});
-</script>
-
 

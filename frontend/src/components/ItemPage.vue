@@ -1,3 +1,33 @@
+<script setup lang="ts">
+import { ref, Ref, reactive } from "vue";
+import { LeftoverItem } from '../models/leftovers';
+import {User, ReactiveUsers} from '../models/users';
+import dayjs from 'dayjs';
+import { getSpoilData } from '../utils/dates';
+import type {SpoilData} from '../utils/dates';
+
+const props = defineProps<{
+	id: string
+}>();
+
+const item = reactive(new LeftoverItem);
+
+const start_str = ref("...");
+const spoil :Ref<SpoilData> = ref({days:0, text:"", ok:false, warn:false, spoiled:false});
+const last_str = ref("...");
+const image_src = ref("");
+
+const user = ref(new User);
+
+item.fetch(Number(props.id)).then( () => {
+	start_str.value = dayjs(item.start_date).fromNow().replace("ago", "old");
+	spoil.value = getSpoilData(item.spoil_date);
+	last_str.value = dayjs(item.last_update).fromNow();
+	image_src.value = "/images/"+item.image;
+	user.value = ReactiveUsers.getUser(item.proxy_id);
+});
+
+</script>
 
 <template>
 	<div class="p-4 bg-white">
@@ -23,56 +53,4 @@
 		</div>
 	</div>
 </template>
-
-
-<script lang="ts">
-import { defineComponent, ref, Ref, reactive } from "vue";
-import { LeftoverItem } from '../models/leftovers';
-import {User, ReactiveUsers} from '../models/users';
-import dayjs from 'dayjs';
-import { getSpoilData } from '../utils/dates';
-import type {SpoilData} from '../utils/dates';
-
-export default defineComponent({
-	name: "ItemPage",
-	components: {
-		
-	},
-	props: {
-		id: {
-			type: String,
-			required: true
-		}
-	},
-	setup(props) {
-
-		const item = reactive(new LeftoverItem);
-
-		const start_str = ref("...");
-		const spoil :Ref<SpoilData> = ref({days:0, text:"", ok:false, warn:false, spoiled:false});
-		const last_str = ref("...");
-		const image_src = ref("");
-
-		const user = ref(new User);
-
-		item.fetch(Number(props.id)).then( () => {
-			start_str.value = dayjs(item.start_date).fromNow().replace("ago", "old");
-			spoil.value = getSpoilData(item.spoil_date);
-			last_str.value = dayjs(item.last_update).fromNow();
-			image_src.value = "/images/"+item.image;
-			user.value = ReactiveUsers.getUser(item.proxy_id);
-		});
-
-		return {
-			item,
-			start_str,
-			spoil,
-			last_str,
-			image_src,
-			user
-		}
-	}
-});
-</script>
-
 

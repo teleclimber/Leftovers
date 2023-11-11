@@ -1,3 +1,88 @@
+<script setup lang="ts">
+import { ref, Ref, reactive } from "vue";
+import { ItemPatchData, LeftoverItem, ImageChangeMode } from '../models/leftovers';
+import router from '../router/index';
+import dayjs from 'dayjs';
+import { getDateAfterDays, getDaysBetween } from '../utils/dates';
+import Camera from './Camera.vue';
+import {patchItem} from '../models/leftovers';
+
+const props = defineProps<{
+	id: string
+}>();
+	
+const id = Number(props.id);
+
+const item = reactive(new LeftoverItem);
+
+const title = ref("");
+const description = ref("");
+const start_date = ref("");
+const days_to_spoil = ref(5);
+const cur_image :Ref<HTMLImageElement|undefined> = ref();
+const image_change = ref(ImageChangeMode.Keep);
+const replace_image :Ref<Blob|undefined> = ref();
+
+const finished = ref(false);
+
+const show_more = ref(false);
+
+item.fetch(id).then( () => {
+	title.value = item.title;
+	description.value = item.description;
+	start_date.value = dayjs(item.start_date).format("YYYY-MM-DD");
+	days_to_spoil.value = getDaysBetween(item.start_date, item.spoil_date);
+
+	// image, needs to be passed to camera
+	if( item.image ) {
+		cur_image.value = new Image();
+		cur_image.value.src = "/images/"+item.image;
+	}
+	
+	finished.value = item.finished;
+});
+
+async function imageChanged(ev:any) {
+	image_change.value = ev.mode;
+	if( ev.mode === ImageChangeMode.Replace ) {
+		replace_image.value = ev.data;
+	}
+	else {
+		replace_image.value = undefined;
+	} 
+}
+
+async function save() {
+	const patch_data :ItemPatchData = {
+		image_mode: image_change.value
+	}
+	if( image_change.value === ImageChangeMode.Replace ) patch_data.image_data = replace_image.value;
+	if( title.value !== item.title ) patch_data.title = title.value;
+	if( description.value !== item.description ) patch_data.description = description.value;
+	if( finished.value != item.finished ) patch_data.finished = finished.value;
+
+	if( start_date.value && start_date.value !== dayjs(item.start_date).format("YYYY-MM-DD") ) {
+		patch_data.start_date = dayjs(start_date.value).add(12, 'hour').toDate();
+		patch_data.spoil_date = getDateAfterDays( patch_data.start_date, days_to_spoil.value );
+	}
+	else if( days_to_spoil.value !== getDaysBetween(item.start_date, item.spoil_date) ) {
+		patch_data.spoil_date = getDateAfterDays(item.start_date, days_to_spoil.value );
+	}
+
+	try {
+		await patchItem(id, patch_data);
+	}
+	catch(e) {
+		alert(e);
+		return;
+	}
+
+	if( patch_data.finished ) router.push({name:"Home"} );
+	else router.push({name:"LeftoverItem",params:{id}} );
+}
+
+</script>
+
 <template>
 	<div class="p-4 bg-white">
 		<Camera @imageChanged="imageChanged" :image="cur_image"></Camera>
@@ -65,103 +150,3 @@
 		</div>
 	</div>
 </template>
-
-<script lang="ts">
-import { defineComponent, PropType, ref, Ref, reactive } from "vue";
-import { ItemPatchData, LeftoverItem, ImageChangeMode } from '../models/leftovers';
-import router from '../router/index';
-import dayjs from 'dayjs';
-import { getDateAfterDays, getDaysBetween } from '../utils/dates';
-import Camera from './Camera.vue';
-import {patchItem} from '../models/leftovers';
-
-export default defineComponent({
-	name: "ItemUpdatePage",
-	components: {
-		Camera
-	},
-	props: {
-		id: {
-			type: String,
-			required: true
-		}
-	},
-	setup(props) {
-		const id = Number(props.id);
-
-		const item = reactive(new LeftoverItem);
-
-		const title = ref("");
-		const description = ref("");
-		const start_date = ref("");
-		const days_to_spoil = ref(5);
-		const cur_image :Ref<HTMLImageElement|undefined> = ref();
-		const image_change = ref(ImageChangeMode.Keep);
-		const replace_image :Ref<Blob|undefined> = ref();
-
-		const finished = ref(false);
-
-		const show_more = ref(false);
-
-		item.fetch(id).then( () => {
-			title.value = item.title;
-			description.value = item.description;
-			start_date.value = dayjs(item.start_date).format("YYYY-MM-DD");
-			days_to_spoil.value = getDaysBetween(item.start_date, item.spoil_date);
-
-			// image, needs to be passed to camera
-			if( item.image ) {
-				cur_image.value = new Image();
-				cur_image.value.src = "/images/"+item.image;
-			}
-			
-			finished.value = item.finished;
-		});
-
-		async function imageChanged(ev:any) {
-			image_change.value = ev.mode;
-			if( ev.mode === ImageChangeMode.Replace ) {
-				replace_image.value = ev.data;
-			}
-			else {
-				replace_image.value = undefined;
-			} 
-		}
-
-		async function save() {
-			const patch_data :ItemPatchData = {
-				image_mode: image_change.value
-			}
-			if( image_change.value === ImageChangeMode.Replace ) patch_data.image_data = replace_image.value;
-			if( title.value !== item.title ) patch_data.title = title.value;
-			if( description.value !== item.description ) patch_data.description = description.value;
-			if( finished.value != item.finished ) patch_data.finished = finished.value;
-
-			if( start_date.value && start_date.value !== dayjs(item.start_date).format("YYYY-MM-DD") ) {
-				patch_data.start_date = dayjs(start_date.value).add(12, 'hour').toDate();
-				patch_data.spoil_date = getDateAfterDays( patch_data.start_date, days_to_spoil.value );
-			}
-			else if( days_to_spoil.value !== getDaysBetween(item.start_date, item.spoil_date) ) {
-				patch_data.spoil_date = getDateAfterDays(item.start_date, days_to_spoil.value );
-			}
-
-			try {
-				await patchItem(id, patch_data);
-			}
-			catch(e) {
-				alert(e);
-				return;
-			}
-
-			if( patch_data.finished ) router.push({name:"Home"} );
-			else router.push({name:"LeftoverItem",params:{id}} );
-		}
-
-		return {
-			title, description, start_date, days_to_spoil, cur_image, finished,
-			imageChanged, show_more, save
-		}
-	}
-
-});
-</script>
