@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import type { LeftoverItem } from '../models/leftovers';
-import {ReactiveUsers} from '../models/users';
 import dayjs from 'dayjs';
 import {getSpoilData} from '../utils/dates';
 
@@ -14,7 +14,8 @@ const spoil = getSpoilData(item.spoil_date);
 		
 const last_str = dayjs(item.last_update).fromNow();
 const image_src = "/images/"+item.image;
-const user = ReactiveUsers.getUser(item.proxy_id);
+//const user = ReactiveUsers.getUser(item.proxy_id);
+const user = ref();
 
 </script>
 

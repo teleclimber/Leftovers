@@ -10,25 +10,35 @@ const routes: Array<RouteRecordRaw> = [
 		name: 'Home',
 		component: ActiveItemsPage
 	},{
-    path:'/new',
-    name:'New',
-    component: NewItemPage
-  },{
-    path:'/leftovers/:id',
-    name:'LeftoverItem',
-    component: ItemPage,
-    props: true
-  },{
-    path:'/leftovers/:id/update',
-    name:'LeftoverItemUpdate',
-    component: ItemUpdatePage,
-    props: true
-  }
-]
+		path:'/new',
+		name:'New',
+		component: NewItemPage
+	},{
+		path:'/leftovers/:id',
+		name:'LeftoverItem',
+		component: ItemPage,
+		props: route => {
+			let id :number|undefined;
+			const qs = Number(route.params['id']);
+			if( !isNaN(qs)  ) id = qs;
+			return {id}
+		}
+	},{
+		path:'/leftovers/:id/update',
+		name:'LeftoverItemUpdate',
+		component: ItemUpdatePage,
+		props: route => {
+			let id :number|undefined;
+			const qs = Number(route.params['id']);
+			if( !isNaN(qs)  ) id = qs;
+			return {id}
+		}
+	}
+];
 
 const router = createRouter({
   history: createWebHistory(),
   routes
-})
+});
 
 export default router

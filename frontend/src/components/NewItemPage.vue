@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { ref, Ref } from "vue";
-import router from '../router/index';
+import { useRouter } from "vue-router";
 import Camera from './Camera.vue';
-import {postNewItem} from '../models/leftovers';
+import { useLeftoverItemsStore } from "../models/leftovers";
 import {ImageChangeMode} from '../models/leftovers';
+
+const router = useRouter();
+
+const leftoversStore = useLeftoverItemsStore();
 
 const title = ref("");
 const description = ref("");
@@ -20,16 +24,9 @@ async function imageChanged(ev:any) {
 }
 
 async function save() {
-	let new_id :number;
-	try {
-		new_id = await postNewItem(image.value, title.value, description.value, days.value, new Date());
-	}
-	catch(e) {
-		alert(e);
-		return;
-	}
+	const new_id = await leftoversStore.postNewItem(image.value, title.value, description.value, days.value, new Date());
 
-	router.push({name:"LeftoverItem",params:{id:new_id}} );
+	router.push({name:"LeftoverItem",params:{id:new_id}} );	// actually go straight home!
 }
 
 </script>

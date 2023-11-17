@@ -1,91 +1,69 @@
-import { reactive, ref, Ref } from 'vue';
-import ax from '../axios';
+import { ref, Ref, computed, reactive } from 'vue';
+import { defineStore } from 'pinia';
+import { LoadState, User } from './common';
+import { gFetch } from './response_guard';
 
-// how do we handle this?
-// Don't want to reload the whole list each time?
-// But if a user is added to appspace, then other users should not have to refresh the page.
-// -> load all users, then load unknown users as needed?
-
-// -> also how to handle changes, like user display name?
-
-// One option actually would be to use http caching!
-// -> request all users on each view, but cache the response, 
-// ..and therefore can expect to load no data if nothing changed
-// -> would handle both new user, and any change within users.
-
-
-
-export class User {
-	loaded = false;
-
-	proxy_id: string = "";
-	permissions: string[] = [];
-	displayName: string = "";
-	avatar: string = "";
-
-	setFromRaw(raw :any) {
-		this.proxy_id = raw.proxyId+'';
-		this.permissions = raw.permissions;
-		this.displayName = raw.displayName+'';
-		this.avatar = raw.avatar+'';
-
-		this.loaded = true;
-	}
-	async fetchCurrent() {
-		const resp_data = await ax.get('/api/current-user/');
-		if( resp_data.status === 200 ) this.setFromRaw(resp_data.data);
-	}
+function userFromRaw(raw:any) :User {
+	return {
+		proxy_id: raw.proxyId+'',
+		display_name: raw.displayName+'',
+		avatar: raw.avatar+''
+	};
 }
 
+export const useUsersStore = defineStore('users', () => {
+	const load_state = ref(LoadState.NotLoaded);
+	const is_loaded = computed( () => load_state.value === LoadState.Loaded );
 
-// This is meant to be a reactive class instance 
-// that is common to all modules, 
-// such taht it doesn't constantly refetch users.
-// Unhandled: how  are changes to users reloaded? 
-class Users {
+	const users :Map<string,User> = reactive(new Map);
 
-	by_proxy: Map<string,User> = new Map;
-	current: User = new User;
+	const current_user_load_state = ref(LoadState.NotLoaded);
+	const current_user_proxy_id:Ref<string|undefined> = ref();
 
-	authenticated = true;
-
-	async fetchAll() {
-		const resp = await ax.get('/api/users');
-		resp.data.forEach( this.ingestRaw );
+	async function loadData() {
+		if( load_state.value !== LoadState.NotLoaded ) return;
+		load_state.value = LoadState.Loading;
+		const resp = await gFetch("/api/users");
+		const data = await resp.json();
+		if( !Array.isArray(data) ) throw new Error("expected data to be array");
+		data.forEach( updateUserFromRaw );
+		load_state.value = LoadState.Loaded;
 	}
-	async fetchCurrent() {
-		const resp_data = await ax.get('/api/current-user/');
-		if( resp_data.status === 200 ) {
-			const c = this.ingestRaw(resp_data.data);
-			this.current.setFromRaw(resp_data.data);	// eh, doing this twice?
+
+	async function loadCurrentUserData() {
+		if( current_user_load_state.value !== LoadState.NotLoaded ) return;
+		current_user_load_state.value = LoadState.Loading;
+		const resp = await gFetch("/api/current-user");
+		const u = updateUserFromRaw(await resp.json());
+		current_user_proxy_id.value = u.proxy_id;
+		current_user_load_state.value = LoadState.Loaded;
+	}
+	async function loadGetCurrentUser() :Promise<User>{
+		if( current_user_load_state.value === LoadState.NotLoaded ) {
+			await loadCurrentUserData();
 		}
-	}
-	ingestRaw(raw:any) : User{
-		let u = new User;
-		u.setFromRaw(raw);
-		const existing = this.by_proxy.get(u.proxy_id);
-		if( existing !== undefined) {
-			existing.setFromRaw(raw);
-			return existing;
-		}
-		else {
-			this.by_proxy.set(u.proxy_id, u);
-			return u;
-		}
+		return users.get(current_user_proxy_id.value!)!
 	}
 
-	getUser(proxy_id: string) :User {
-		const u = this.by_proxy.get(proxy_id);
-		if( u !== undefined ) return u;
-		
-		// not found, so put it in and fetch
-		const n = reactive(new User);
-		this.by_proxy.set(proxy_id, n);
-		ax.get('/api/users/'+proxy_id).then( (resp:any) => {
-			this.ingestRaw(resp.data);
-		});
-		return n;
+	function setEmptyUser(proxy_id:string) {
+		users.set(proxy_id, {proxy_id, display_name:"", avatar:""});
 	}
-}
+	function updateUserFromRaw(raw:any) :User {
+		const u = userFromRaw(raw);
+		if( !users.has(u.proxy_id) ) setEmptyUser(u.proxy_id);
+		const ru = users.get(u.proxy_id)!;
+		ru.display_name = u.display_name;
+		ru.avatar = u.avatar;
+		return ru;
+	}
 
-export const ReactiveUsers = reactive(new Users)
+	function loadGetUser(proxy_id:string) :User {
+		if( !users.has(proxy_id) ) {
+			setEmptyUser(proxy_id);
+			loadData();
+		}
+		return users.get(proxy_id)!;
+	}
+
+	return { is_loaded, loadData, loadGetUser, loadGetCurrentUser };
+});

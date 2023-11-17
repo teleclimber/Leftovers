@@ -1,20 +1,19 @@
 <script setup lang="ts">
-import { ref, Ref, reactive } from "vue";
-import { ItemPatchData, LeftoverItem, ImageChangeMode } from '../models/leftovers';
-import router from '../router/index';
+import { ref, Ref } from "vue";
+import { useRouter } from "vue-router";
+import { useLeftoverItemsStore, ImageChangeMode, ItemPatchData, LeftoverItem } from "../models/leftovers";
 import dayjs from 'dayjs';
 import { getDateAfterDays, getDaysBetween } from '../utils/dates';
 import Camera from './Camera.vue';
-import {patchItem} from '../models/leftovers';
 
 const props = defineProps<{
-	id: string
+	id: number
 }>();
+
+const router = useRouter();
+
+const leftoversStore = useLeftoverItemsStore();
 	
-const id = Number(props.id);
-
-const item = reactive(new LeftoverItem);
-
 const title = ref("");
 const description = ref("");
 const start_date = ref("");
@@ -27,19 +26,26 @@ const finished = ref(false);
 
 const show_more = ref(false);
 
-item.fetch(id).then( () => {
-	title.value = item.title;
-	description.value = item.description;
-	start_date.value = dayjs(item.start_date).format("YYYY-MM-DD");
-	days_to_spoil.value = getDaysBetween(item.start_date, item.spoil_date);
+const item :Ref<LeftoverItem|undefined> = ref();
+leftoversStore.getLoadItem(props.id).then( li => {
+	if( li === undefined ) {
+		alert("unable to find item");
+		return;
+	}
+	item.value = li;
+
+	title.value = item.value.title;
+	description.value = item.value.description;
+	start_date.value = dayjs(item.value.start_date).format("YYYY-MM-DD");
+	days_to_spoil.value = getDaysBetween(item.value.start_date, item.value.spoil_date);
 
 	// image, needs to be passed to camera
-	if( item.image ) {
+	if( item.value.image ) {
 		cur_image.value = new Image();
-		cur_image.value.src = "/images/"+item.image;
+		cur_image.value.src = "/images/"+item.value.image;
 	}
 	
-	finished.value = item.finished;
+	finished.value = item.value.finished;
 });
 
 async function imageChanged(ev:any) {
@@ -53,32 +59,28 @@ async function imageChanged(ev:any) {
 }
 
 async function save() {
+	if( item.value === undefined ) return;
+	const i = item.value;
 	const patch_data :ItemPatchData = {
 		image_mode: image_change.value
 	}
 	if( image_change.value === ImageChangeMode.Replace ) patch_data.image_data = replace_image.value;
-	if( title.value !== item.title ) patch_data.title = title.value;
-	if( description.value !== item.description ) patch_data.description = description.value;
-	if( finished.value != item.finished ) patch_data.finished = finished.value;
+	if( title.value !== i.title ) patch_data.title = title.value;
+	if( description.value !== i.description ) patch_data.description = description.value;
+	if( finished.value != i.finished ) patch_data.finished = finished.value;
 
-	if( start_date.value && start_date.value !== dayjs(item.start_date).format("YYYY-MM-DD") ) {
+	if( start_date.value && start_date.value !== dayjs(i.start_date).format("YYYY-MM-DD") ) {
 		patch_data.start_date = dayjs(start_date.value).add(12, 'hour').toDate();
 		patch_data.spoil_date = getDateAfterDays( patch_data.start_date, days_to_spoil.value );
 	}
-	else if( days_to_spoil.value !== getDaysBetween(item.start_date, item.spoil_date) ) {
-		patch_data.spoil_date = getDateAfterDays(item.start_date, days_to_spoil.value );
+	else if( days_to_spoil.value !== getDaysBetween(i.start_date, i.spoil_date) ) {
+		patch_data.spoil_date = getDateAfterDays(i.start_date, days_to_spoil.value );
 	}
 
-	try {
-		await patchItem(id, patch_data);
-	}
-	catch(e) {
-		alert(e);
-		return;
-	}
-
+	await leftoversStore.patchItem(props.id, patch_data);
+	
 	if( patch_data.finished ) router.push({name:"Home"} );
-	else router.push({name:"LeftoverItem",params:{id}} );
+	else router.push({name:"LeftoverItem",params:{id: props.id}} );
 }
 
 </script>

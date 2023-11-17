@@ -2,6 +2,7 @@
 node_modules
 /app/frontend
 /dist
+/frontend/dev-dist
 
 
 # local env files

@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import {ReqErrStack} from '../axios';
+import { useResponseGuardStore } from '../models/response_guard';
 
-const errors = ReqErrStack.errs;
+const responseGuardStore = useResponseGuardStore();
+
+const errors = responseGuardStore.errors;
 
 </script>
 

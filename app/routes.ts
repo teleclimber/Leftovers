@@ -1,6 +1,6 @@
 import  {RoutesBuilder, AuthAllow} from 'https://deno.land/x/dropserver_app@v0.2.0/mod.ts';
 import {getLeftoverItems, getLeftoverItem, postLeftoverItem, patchLeftoverItem} from './handlers/leftovers.ts';
-import {getCurrentUser, getUser} from './handlers/users.ts';
+import {getCurrentUser, getUser, getAllUsers} from './handlers/users.ts';
 
 export default function createRoutes() {
 	const r = new RoutesBuilder;
@@ -21,6 +21,7 @@ export default function createRoutes() {
 	// users:
 	r.add("get", "/api/current-user", authorizedOnly, getCurrentUser)
 	r.add("get", "/api/users/:proxy_id", authorizedOnly, getUser);
+	r.add("get", "/api/users", authorizedOnly, getAllUsers);
 
 	// user avatars...
 	r.add("get", {path:"/avatars", end: false}, authorizedOnly, r.staticFileHandler({path:'@avatars/'}));
