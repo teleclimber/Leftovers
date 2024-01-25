@@ -32,7 +32,8 @@ leftoversStore.getLoadItem(props.id).then( li => {
 	start_str.value = dayjs(li.start_date).fromNow().replace("ago", "old");
 	spoil.value = getSpoilData(li.spoil_date);
 	last_str.value = dayjs(li.last_update).fromNow();
-	image_src.value = "/images/"+li.image;
+	image_src.value = '';
+	if( li.image ) image_src.value = "/images/"+li.image;
 	user.value = usersStore.loadGetUser(li.proxy_id);
 });
 
@@ -40,7 +41,7 @@ leftoversStore.getLoadItem(props.id).then( li => {
 
 <template>
 	<div class="p-4 bg-white">
-		<img :src="image_src" class="" />
+		<img v-if="image_src" :src="image_src" class="" />
 		<h2 class="text-2xl my-4 font-bold">{{item?.title}}</h2>
 		<div class="my-4 flex">
 			<span  class="px-3 py-1 rounded-full " :class="{

@@ -13,15 +13,15 @@ const start_str = dayjs(item.start_date).fromNow().replace("ago", "old");
 const spoil = getSpoilData(item.spoil_date);
 		
 const last_str = dayjs(item.last_update).fromNow();
-const image_src = "/images/"+item.image;
-//const user = ReactiveUsers.getUser(item.proxy_id);
+const image_src = item.image ? "/images/"+item.image : '';
 const user = ref();
 
 </script>
 
 <template>
-	<router-link :to="{name:'LeftoverItem', params:{id:item.id}}" class="block bg-gray-800">
-		<img class="object-cover" :src="image_src" />
+	<router-link :to="{name:'LeftoverItem', params:{id:item.id}}" class="block bg-gray-700 aspect-square">
+		<img v-if="image_src" class="object-cover" :src="image_src" />
+		<img v-else src="/public/img/icons/maskable_icon_x512.png"  class="saturate-0 opacity-30" />
 	</router-link>
 	<router-link :to="{name:'LeftoverItem', params:{id:item.id}}" class="block pl-2 col-span-2 bg-white border-b border-gray-200">
 		<h2 class="text-lg font-bold">{{item.title}}</h2>
