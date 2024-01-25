@@ -61,6 +61,7 @@ export default defineConfig({
 				]
 			},
 			workbox:{
+				navigateFallback: null,
 				runtimeCaching: [{
 					urlPattern: ({_, url}) => {
 						return url.pathname.startsWith("/images")
@@ -68,10 +69,10 @@ export default defineConfig({
 					handler: "CacheFirst",
 					options: {
 						expiration: {
-							maxAgeSeconds: 60*60*24*30,	// 30 days
+							maxAgeSeconds: 60*60*24*60,	// 60 days
 							purgeOnQuotaError: true
 						},
-						cacheName: "data-v2"
+						cacheName: "item-images"
 					}
 				}]
 			},
