@@ -1,7 +1,7 @@
 {
 	"name":	"Leftovers",
 	"short-description": "Don't let your delicious leftovers go to waste",
-	"version": "0.6.1",
+	"version": "0.6.2",
 	"icon": "frontend/img/icons/maskable_icon_x512.png",
 	"accent-color": "rgba(5, 150, 105)",
 	"authors": [{
