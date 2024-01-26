@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed } from 'vue';
 import type { LeftoverItem } from '../models/leftovers';
 import dayjs from 'dayjs';
 import {getSpoilData} from '../utils/dates';
@@ -8,13 +8,11 @@ const props = defineProps<{
 	item: LeftoverItem
 }>();
 
-const item = props.item;
-const start_str = dayjs(item.start_date).fromNow().replace("ago", "old");
-const spoil = getSpoilData(item.spoil_date);
-		
-const last_str = dayjs(item.last_update).fromNow();
-const image_src = item.image ? "/images/"+item.image : '';
-const user = ref();
+const start_str = computed( () => dayjs(props.item.start_date).fromNow().replace("ago", "old"));
+const spoil = computed( () => getSpoilData(props.item.spoil_date));
+const image_src = computed( () => {
+	return props.item.image ? "/images/"+props.item.image : '';
+}) ;
 
 </script>
 
@@ -38,4 +36,3 @@ const user = ref();
 		<p class="my-2 line-clamp-2">{{item.description}}</p>
 	</router-link>
 </template>
-

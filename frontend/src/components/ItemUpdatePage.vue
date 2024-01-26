@@ -5,6 +5,7 @@ import { useLeftoverItemsStore, ImageChangeMode, ItemPatchData, LeftoverItem } f
 import dayjs from 'dayjs';
 import { getDateAfterDays, getDaysBetween } from '../utils/dates';
 import Camera from './Camera.vue';
+import Loading from "./Loading.vue";
 
 const props = defineProps<{
 	id: number
@@ -58,6 +59,7 @@ async function imageChanged(ev:any) {
 	} 
 }
 
+const saving = ref(false);
 async function save() {
 	if( item.value === undefined ) return;
 	const i = item.value;
@@ -77,10 +79,10 @@ async function save() {
 		patch_data.spoil_date = getDateAfterDays(i.start_date, days_to_spoil.value );
 	}
 
+	saving.value = true;
 	await leftoversStore.patchItem(props.id, patch_data);
-	
-	if( patch_data.finished ) router.push({name:"Home"} );
-	else router.push({name:"LeftoverItem",params:{id: props.id}} );
+	saving.value = false;
+	router.replace({name:"Home"} );
 }
 
 </script>
@@ -148,7 +150,13 @@ async function save() {
 
 		<div class="flex justify-between">
 			<router-link :to="{name:'LeftoverItem', params:{id:id}}" class="border border-red-400 text-red-400 px-4 py-2 rounded text-sm uppercase">cancel</router-link>
-			<button @click="save" class="bg-blue-600 text-white px-4 py-2 text-sm uppercase rounded">Save</button>
+			<button @click="save" 
+					class=" text-white px-4 py-2 text-sm uppercase rounded" 
+					:class="[saving ? 'bg-gray-400' : 'bg-blue-600']"
+					:disabled="saving">
+				<Loading v-if="saving" class="w-9"></Loading>
+				<template v-else>Save</template>
+			</button>
 		</div>
 	</div>
 </template>

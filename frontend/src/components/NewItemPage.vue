@@ -4,6 +4,7 @@ import { useRouter } from "vue-router";
 import Camera from './Camera.vue';
 import { useLeftoverItemsStore } from "../models/leftovers";
 import {ImageChangeMode} from '../models/leftovers';
+import Loading from "./Loading.vue";
 
 const router = useRouter();
 
@@ -23,10 +24,13 @@ async function imageChanged(ev:any) {
 	}
 }
 
+const saving = ref(false);
 async function save() {
-	const new_id = await leftoversStore.postNewItem(image.value, title.value, description.value, days.value, new Date());
-
-	router.push({name:"LeftoverItem",params:{id:new_id}} );	// actually go straight home!
+	if( !title.value && !image.value ) return;	// not enough data to save
+	saving.value = true;
+	await leftoversStore.postNewItem(image.value, title.value, description.value, days.value, new Date());
+	saving.value = false;
+	router.replace({name:"Home"} );
 }
 
 </script>
@@ -64,7 +68,13 @@ async function save() {
 
 		<div class="flex justify-between">
 			<router-link to="/" class="border border-red-400 text-red-400 px-4 py-2 rounded text-sm uppercase">cancel</router-link>
-			<button @click="save" class="bg-blue-600 text-white px-4 py-2 text-sm uppercase rounded">Save</button>
+			<button @click="save"
+					class="text-white px-4 py-2 text-sm uppercase rounded"
+					:class="[saving ? 'bg-gray-400' : 'bg-blue-600']"
+					:disabled="saving">
+				<Loading v-if="saving" class="w-9"></Loading>
+				<template v-else>Save</template>
+			</button>
 		</div>
 	</div>
 </template>
