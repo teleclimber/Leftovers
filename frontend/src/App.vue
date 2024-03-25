@@ -10,7 +10,7 @@ const responseGuardStore = useResponseGuardStore();
 
 <template>
 	<div>
-		<header class="sticky top-0 z-50 h-16 bg-green-600 text-white flex items-center justify-between">
+		<header class="sticky top-0 z-50 h-16 text-white flex items-center justify-between">
 			<div class="pl-6">
 				<span class="text-2xl">
 					<router-link to="/">Leftovers</router-link>
@@ -37,3 +37,8 @@ const responseGuardStore = useResponseGuardStore();
 		</div>
 	</div>
 </template>
+<style scoped>
+header {
+	background: rgb(5, 150, 105);
+}
+</style>
