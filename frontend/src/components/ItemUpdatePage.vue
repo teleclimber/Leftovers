@@ -89,7 +89,7 @@ async function save() {
 
 <template>
 	<div class="p-4 bg-white">
-		<Camera @imageChanged="imageChanged" :image="cur_image"></Camera>
+		<Camera @imageChanged="imageChanged" :image="cur_image" :edit="true"></Camera>
 	
 		<div class="my-4">
 			<label for="title" class="block text-sm font-medium text-gray-700">

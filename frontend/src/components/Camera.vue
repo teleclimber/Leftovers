@@ -3,6 +3,7 @@ import { ref , Ref, onMounted, onBeforeUnmount, watch} from "vue";
 import {ImageChangeMode } from '../models/leftovers';
 
 const props = defineProps<{
+	edit: boolean,
 	image?: HTMLImageElement
 }>();
 
@@ -12,7 +13,7 @@ const emit = defineEmits<{
 
 	
 const pic_size = 800;
-const capture_mode = ref(true);
+const capture_mode = ref(false);
 const has_capture = ref(false);
 const suppress_image = ref(false);
 
@@ -20,7 +21,8 @@ const camera_elem :Ref<HTMLVideoElement	|null> = ref(null);
 const canvas_elem :Ref<HTMLCanvasElement|null> = ref(null);
 
 onMounted(async () => {
-	await createCameraElement();
+	updateCanvas();
+	if( !props.edit ) enterCaptureMode();
 });
 onBeforeUnmount(() => {
 	stopCameraStream();
@@ -60,6 +62,11 @@ function exitCaptureMode() {
 	capture_mode.value = false;
 	updateCanvas();
 }
+
+watch(capture_mode, () => {
+	if( capture_mode.value ) createCameraElement()
+	else stopCameraStream();
+}, {immediate: true});
 
 async function createCameraElement() {
 	const constraints = {
