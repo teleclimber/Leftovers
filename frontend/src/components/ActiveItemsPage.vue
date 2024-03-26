@@ -2,6 +2,7 @@
 import {useLeftoverItemsStore} from '../models/leftovers';
 
 import LeftoverListItem from './LeftoverListItem.vue';
+import Loading from './Loading.vue';
 
 const leftoverItemsStore = useLeftoverItemsStore();
 leftoverItemsStore.fetchActive();
@@ -10,7 +11,13 @@ leftoverItemsStore.fetchActive();
 
 <template>
 	<div>
-		<div v-if="leftoverItemsStore.items.length === 0" class="h-64 flex items-center justify-center">
+		<div v-if="!leftoverItemsStore.loaded" class="h-64 flex flex-col items-center justify-center">
+			<div class="h-4 w-8">
+				<Loading class="gray "></Loading>
+			</div>
+			<p class="mt-4 text-gray-500 italic">Loading...</p>
+		</div>
+		<div v-else-if="leftoverItemsStore.items.length === 0" class="h-64 flex items-center justify-center">
 			Nothing at the moment.
 		</div>
 		<div v-else class="grid grid-cols-3">

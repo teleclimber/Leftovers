@@ -9,6 +9,9 @@
 	background: rgba(255, 255, 255, 0.3);
 	animation: animated-loader 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
 }
+.animated-loader.gray div {
+	background: rgba(38, 38, 38, 0.3);
+}
 .animated-loader div:nth-child(1) {
 	animation-delay: -0.24s;
 }
