@@ -58,7 +58,23 @@ export default defineConfig({
 						"type": "image/png",
 						"purpose": "any"
 					}
-				]
+				],
+				"shortcuts": [{
+					"name": "Add item",
+					"short_name": "Add",
+					"url": "/new",
+					"icons": [{
+						"src": "img/icons/add-icon-224.png",
+						"sizes": "224x224",
+						"type": "image/png",
+						"purpose": "any"
+					},{
+						"src": "img/icons/add-icon-96.png",
+						"sizes": "96x96",
+						"type": "image/png",
+						"purpose": "any"
+					}]
+				}],
 			},
 			workbox:{
 				navigateFallback: null,
