@@ -68,24 +68,26 @@ watch(capture_mode, () => {
 	else stopCameraStream();
 }, {immediate: true});
 
+const no_cam_insecure = ref(!navigator.mediaDevices);
+const camera_error = ref('');
 async function createCameraElement() {
-	const constraints = {
-		audio: false,
-		video: {
-			facingMode: {
-				ideal: 'environment'
-			}
-		}
-	};
-
+	if( !navigator.mediaDevices ) return;
+	camera_error.value = '';
+	let stream :MediaStream|undefined;
 	try {
-		const stream = await navigator.mediaDevices.getUserMedia(constraints);
-		if( camera_elem.value == null ) throw new Error("camera elem is null");
-		camera_elem.value.srcObject = stream;
+		stream = await navigator.mediaDevices.getUserMedia({
+			audio: false,
+			video: {
+				facingMode: {
+					ideal: 'environment'
+				}
+			}
+		});
 	} catch(err) {
 		// Sometimes this can happen if the user leaves the page quickly after landing on it.
-		console.error(err);
+		camera_error.value = err+'';
 	}
+	if( camera_elem.value && stream ) camera_elem.value.srcObject = stream;
 }
 
 function stopCameraStream() {
@@ -137,7 +139,7 @@ function emitEvent() {
 
 <template>
 	<div class="flex justify-center">
-		<div>  
+		<div class="relative">  
 			<video v-show="capture_mode" ref="camera_elem" autoplay class="w-80 h-80 object-center object-cover"></video>
 			<canvas v-show="!capture_mode" ref="canvas_elem" class="w-80 h-80"></canvas>
 		
@@ -174,6 +176,16 @@ function emitEvent() {
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
 					</svg>
 				</button>
+			</div>
+			<div class="absolute top-0 text-balance text-center p-2 bg-yellow-100" v-if="no_cam_insecure">
+				<p class="my-2">Leftovers is running in an insecure context, which prevents the camera from working.</p>
+				<p class="my-2">Please enable HTTPS on your instance to use the camera.</p>
+			</div>
+			<div class="absolute top-0 text-balance text-center p-2 bg-yellow-100" v-if="camera_error !== ''">
+				<p class="my-2">Unable to use the camera :(</p>
+				<p class="my-2">
+					Cryptic Error Message:
+					<span class="italic">{{ camera_error }}</span></p>
 			</div>
 		</div>
 	</div>
