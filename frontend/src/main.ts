@@ -10,7 +10,7 @@ const pinia = createPinia();
 
 const updateSW = registerSW({
 	onNeedRefresh() {
-		if( confirm("New service worker is ready. Confirm please.") ) updateSW();
+		if( confirm("A new version of the Leftovers app is ready. Press OK to reload.") ) updateSW();
 	},
 	//onOfflineReady() {},
 });
