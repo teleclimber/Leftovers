@@ -1,5 +1,5 @@
-import * as path from "https://deno.land/std@0.159.0/path/mod.ts";
-import type {Context} from "https://deno.land/x/dropserver_app@v0.2.0/mod.ts"
+import {join} from "jsr:@std/path";
+import type {Context} from "https://deno.land/x/dropserver_app@v0.2.2/mod.ts"
 
 import app from '../app.ts'; 
 
@@ -13,7 +13,7 @@ export async function getLeftoverItems(ctx:Context) {
 	try {
 		items = await getActive();
 	} catch(e) {
-		ctx.respondWith(new Response(e, {status:500}));
+		if (e instanceof Error) ctx.respondWith(new Response(e.toString(), {status:500}));
 		return;
 	}
 	ctx.respondWith(Response.json(items));
@@ -26,7 +26,7 @@ export async function getLeftoverItem(ctx:Context) {
 	try {
 		item = await getByID(Number(params.id));
 	} catch(e) {
-		ctx.respondWith(new Response(e, {status:500}));
+		if (e instanceof Error) ctx.respondWith(new Response(e.toString(), {status:500}));
 		return;
 	}
 
@@ -115,7 +115,7 @@ async function getUploaded(req:Request) : Promise<ItemData|undefined> {
 		}
 		if( key === 'image' ) {
 			ret.image = makeImageFilename();
-			const p = app.appspacePath(path.join('images', ret.image));
+			const p = app.appspacePath(join('images', ret.image));
 			const buffer = await (value as File).arrayBuffer();
 			await Deno.writeFile(p, new Uint8Array(buffer));
 		} 
