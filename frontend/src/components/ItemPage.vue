@@ -30,7 +30,7 @@ leftoversStore.getLoadItem(props.id).then( li => {
 	item.value = li;
 
 	start_str.value = dayjs(li.start_date).fromNow().replace("ago", "old");
-	spoil.value = getSpoilData(li.spoil_date);
+	spoil.value = getSpoilData(li.spoil_date, li.freezer);
 	last_str.value = dayjs(li.last_update).fromNow();
 	image_src.value = '';
 	if( li.image ) image_src.value = "/images/"+li.image;
@@ -40,16 +40,19 @@ leftoversStore.getLoadItem(props.id).then( li => {
 </script>
 
 <template>
-	<div class="p-4 bg-white">
+	<div class="p-4 bg-white" :class="[item?.freezer ? 'freezer' : '']">
 		<img v-if="image_src" :src="image_src" class="" />
 		<h2 class="text-2xl my-4 font-bold">{{item?.title}}</h2>
-		<div class="my-4 flex">
-			<span  class="px-3 py-1 rounded-full " :class="{
+		<p class="flex">
+			<span v-if="item?.freezer" class="px-3 py-1 freezer-label">IN THE FREEZER</span>
+		</p>
+		<div class="my-4 flex ">
+			<span  class="px-3 py-1 rounded-full whitespace-nowrap" :class="{
 				'bg-gray-100':spoil.ok, 'text-gray-700':spoil.ok,
 				'bg-green-100':spoil.warn, 'text-green-700':spoil.warn,
 				'bg-red-600':spoil.spoiled, 'text-red-100':spoil.spoiled,
 			}">{{spoil.text}}</span>
-			<span class="py-1 px-2 text-gray-600 italic">{{start_str}}</span>
+			<span class="py-1 px-2 text-gray-600 italic whitespace-nowrap">{{start_str}}</span>
 		</div>
 		<p v-if="item?.description" class="my-4">{{item?.description}}</p>
 		
@@ -64,3 +67,20 @@ leftoversStore.getLoadItem(props.id).then( li => {
 	</div>
 </template>
 
+<style scoped>
+.freezer-label {
+	background: #7cd8fc;
+	color: #4d849a;
+	background: radial-gradient(circle at top left, rgba(124, 216, 252, 1) 0%, rgba(133, 198, 255, 0.3) 50%, rgba(148, 214, 247, 0) 100%);
+	border: 1px solid #7fbfd8;
+	position: relative;
+	padding-right: 1.5rem;
+}
+.freezer-label::before {
+	content: '❄️';
+	font-size: 2rem;
+	position: absolute;
+	top: -0.9rem;
+	right: -1.1rem;
+}
+</style>

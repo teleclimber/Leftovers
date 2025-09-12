@@ -9,6 +9,7 @@ import { getDateAfterDays } from '../utils/dates';
 type ItemData = {
 	title?: string,
 	description?: string,
+	freezer?: boolean,
 	start_date?: Date,
 	spoil_date?: Date,
 	image_mode: string,
@@ -19,6 +20,7 @@ type ItemData = {
 export type ItemPatchData = {
 	title?:string,
 	description?:string,
+	freezer?: boolean,
 	start_date?: Date,
 	spoil_date?: Date,
 	image_mode: ImageChangeMode,
@@ -30,6 +32,7 @@ export type LeftoverItem = {
 	id: number,
 	title: string,
 	description: string,
+	freezer: boolean,
 	image: string,
 	start_date: Date,
 	spoil_date: Date,
@@ -43,6 +46,7 @@ function rawToLeftoverItem(raw:any) :LeftoverItem {
 		id: Number(raw.id),
 		title: raw.title+'',
 		description: raw.description+'',
+		freezer: !!raw.freezer,
 		image: raw.image+'',
 		start_date: new Date(raw.start_date),
 		spoil_date: new Date(raw.spoil_date),
@@ -72,22 +76,23 @@ export const useLeftoverItemsStore = defineStore('leftover-items', () => {
 			items.push(rawToLeftoverItem(raw));
 		});
 		// sort to oldest first
-		items.sort((a, b) => dayjs(a.spoil_date).isBefore(dayjs(b.spoil_date)) ? -1 : 1);
+		items.sort(sortItem);
 		loaded.value = true;
 	}
 
 	async function getLoadItem(id:number) :Promise<LeftoverItem | undefined> {
-		await fetchActive();
+		await fetchActive();	// TODO assumes active item!
 		return items.find( l => l.id === id );
 	}
 
-	async function postNewItem(imageData:Blob|null, title:string, description:string, days_to_spoil:number, start_date:Date) :Promise<number> {
+	async function postNewItem(imageData:Blob|null, title:string, description:string, freezer:boolean, days_to_spoil:number, start_date:Date) :Promise<number> {
 		const formData = new FormData();
 		if( imageData !== null ) formData.append('image', imageData);
 	
 		const json = JSON.stringify({
 			title,
 			description,
+			freezer,
 			start_date,
 			spoil_date:getDateAfterDays(start_date, days_to_spoil)
 		});
@@ -140,3 +145,7 @@ export const useLeftoverItemsStore = defineStore('leftover-items', () => {
 		postNewItem, patchItem
 	}
 });
+
+function sortItem(a:LeftoverItem, b:LeftoverItem) {
+	return dayjs(a.spoil_date).isBefore(dayjs(b.spoil_date)) ? -1 : 1;
+}

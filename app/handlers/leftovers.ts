@@ -55,6 +55,7 @@ export async function postLeftoverItem(ctx:Context) {
 	const ins_data = {
 		title: form_data.title || '',
 		description: form_data.description || '',
+		freezer: !!form_data.freezer,
 		start_date: form_data.start_date,
 		spoil_date: form_data.spoil_date,
 		image: form_data.image || '',
@@ -96,6 +97,7 @@ export async function patchLeftoverItem(ctx:Context) {
 export type ItemData = {
 	title?: string,
 	description?: string,
+	freezer?: boolean,
 	start_date?: Date,
 	spoil_date?: Date,
 	image_mode: string,

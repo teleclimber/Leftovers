@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { ref, Ref } from "vue";
+import { ref, Ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useLeftoverItemsStore, ImageChangeMode, ItemPatchData, LeftoverItem } from "../models/leftovers";
 import dayjs from 'dayjs';
 import { getDateAfterDays, getDaysBetween } from '../utils/dates';
 import Camera from './Camera.vue';
+import FridgeFreezerSelector from './FridgeFreezerSelector.vue';
+import SpoilsInInput from './SpoilsInInput.vue';
 import Loading from "./Loading.vue";
 
 const props = defineProps<{
@@ -17,6 +19,7 @@ const leftoversStore = useLeftoverItemsStore();
 	
 const title = ref("");
 const description = ref("");
+const freezer = ref(false);
 const start_date = ref("");
 const days_to_spoil = ref(5);
 const cur_image :Ref<HTMLImageElement|undefined> = ref();
@@ -28,7 +31,8 @@ const finished = ref(false);
 const show_more = ref(false);
 
 const item :Ref<LeftoverItem|undefined> = ref();
-leftoversStore.getLoadItem(props.id).then( li => {
+watch( props, async () => {
+	const li = await leftoversStore.getLoadItem(props.id);
 	if( li === undefined ) {
 		alert("unable to find item");
 		return;
@@ -37,6 +41,7 @@ leftoversStore.getLoadItem(props.id).then( li => {
 
 	title.value = item.value.title;
 	description.value = item.value.description;
+	freezer.value = item.value.freezer;
 	start_date.value = dayjs(item.value.start_date).format("YYYY-MM-DD");
 	days_to_spoil.value = getDaysBetween(item.value.start_date, item.value.spoil_date);
 
@@ -47,7 +52,7 @@ leftoversStore.getLoadItem(props.id).then( li => {
 	}
 	
 	finished.value = item.value.finished;
-});
+}, { immediate: true });
 
 async function imageChanged(ev:any) {
 	image_change.value = ev.mode;
@@ -69,6 +74,7 @@ async function save() {
 	if( image_change.value === ImageChangeMode.Replace ) patch_data.image_data = replace_image.value;
 	if( title.value !== i.title ) patch_data.title = title.value;
 	if( description.value !== i.description ) patch_data.description = description.value;
+	if( freezer.value !== i.freezer ) patch_data.freezer = freezer.value; 
 	if( finished.value != i.finished ) patch_data.finished = finished.value;
 
 	if( start_date.value && start_date.value !== dayjs(i.start_date).format("YYYY-MM-DD") ) {
@@ -122,6 +128,10 @@ async function save() {
 				<path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
 			</svg>
 		</div>
+
+		<div v-if="show_more" class="flex justify-center my-4">
+			<FridgeFreezerSelector v-model="freezer"></FridgeFreezerSelector>
+		</div>
 		
 		<div v-if="show_more" class="my-4">
 			<label for="start_date" class="block text-sm font-medium text-gray-700">
@@ -133,11 +143,13 @@ async function save() {
 		</div>
 
 		<div v-if="show_more" class="my-4">
-			<label for="days" class="block text-sm font-medium text-gray-700">
-				Spoils {{days_to_spoil}} days after start day
+			<label for="spoils-in-input" class="block text-sm font-medium text-gray-700">
+				Spoils
+				{{ freezer ? Math.round(days_to_spoil/30) + ' months': days_to_spoil + ' days' }}
+				after start day
 			</label>
 			<div class="mt-1">
-				<input v-model="days_to_spoil" class="w-full" type="range" id="days" name="days" min="1" max="15" step="1" />
+				<SpoilsInInput v-model="days_to_spoil" :freezer="freezer"></SpoilsInInput>
 			</div>
 		</div>
 

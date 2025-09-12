@@ -5,6 +5,8 @@ import Camera from './Camera.vue';
 import { useLeftoverItemsStore } from "../models/leftovers";
 import {ImageChangeMode} from '../models/leftovers';
 import Loading from "./Loading.vue";
+import FridgeFreezerSelector from "./FridgeFreezerSelector.vue";
+import SpoilsInInput from './SpoilsInInput.vue';
 
 const router = useRouter();
 
@@ -12,7 +14,8 @@ const leftoversStore = useLeftoverItemsStore();
 
 const title = ref("");
 const description = ref("");
-const days = ref(5);
+const freezer =ref(false);
+const days_to_spoil = ref(5);
 const image :Ref<Blob|null> = ref(null);
 
 async function imageChanged(ev:any) {
@@ -26,9 +29,10 @@ async function imageChanged(ev:any) {
 
 const saving = ref(false);
 async function save() {
+	if( days_to_spoil.value === undefined ) return; // this is a problem with reactivity
 	if( !title.value && !image.value ) return;	// not enough data to save
 	saving.value = true;
-	await leftoversStore.postNewItem(image.value, title.value, description.value, days.value, new Date());
+	await leftoversStore.postNewItem(image.value, title.value, description.value, freezer.value, days_to_spoil.value, new Date());
 	saving.value = false;
 	router.replace({name:"Home"} );
 }
@@ -57,12 +61,16 @@ async function save() {
 			</div>
 		</div>
 
+		<div class="flex justify-center my-4">
+			<FridgeFreezerSelector v-model="freezer"></FridgeFreezerSelector>
+		</div>
+
 		<div class="mt-4 mb-6">
-			<label for="days" class="block text-sm font-medium text-gray-700">
-				Spoils in {{days}} days
+			<label for="spoils-in-input" class="block text-sm font-medium text-gray-700">
+				Spoils in {{ freezer ? Math.round(days_to_spoil/30) + ' months': days_to_spoil + ' days' }}
 			</label>
 			<div class="mt-1">
-				<input v-model="days" class="w-full" type="range" id="days" name="days" min="1" max="15" step="1" />
+				<SpoilsInInput v-model="days_to_spoil" :freezer="freezer"></SpoilsInInput>
 			</div>
 		</div>
 

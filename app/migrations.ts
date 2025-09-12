@@ -6,9 +6,7 @@ import getDB, {getCreateDB, getDBFile} from './db.ts';
 export default function createMigrations() {
 	const m = new MigrationsBuilder;
 
-	console.log("leftovers registering migrations");
 	m.upTo(1, async () => {
-		console.log("creating db");
 		const db = getCreateDB();
 	
 		console.log("creating table");
@@ -42,6 +40,15 @@ export default function createMigrations() {
 		await Deno.remove(filename);
 
 		await Deno.remove(app.appspacePath('images'), {recursive:true});
+	});
+
+	m.upTo(2, async () => {
+		const db = getCreateDB();
+		db.query("ALTER TABLE leftovers ADD COLUMN \"freezer\" INTEGER NOT NULL DEFAULT 0");
+	});
+	m.downFrom(2, async () => {
+		const db = getCreateDB();
+		db.query("ALTER TABLE leftovers DROP COLUMN \"freezer\"");
 	});
 
 	return m.migrations;

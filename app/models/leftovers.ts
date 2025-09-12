@@ -4,6 +4,7 @@ export type Leftover = {
 	id: number,
 	title: string,
 	description: string,
+	freezer: boolean,
 	image: string,
 	start_date: Date,
 	spoil_date : Date,
@@ -27,6 +28,7 @@ export function getActive() :Leftover[] {
 type insertData = {
 	title: string,
 	description: string,
+	freezer: boolean,
 	start_date: Date,
 	spoil_date: Date,
 	image:string,
@@ -36,9 +38,8 @@ type insertData = {
 export function insert(data:insertData):number {
 	const db = getDB();
 	const start = Date.now();
-	db.query('INSERT INTO leftovers ("title", "description", "start_date", "spoil_date", "image", "finished", "proxy_id") '
-		+' VALUES (:title, :description, :start_date, :spoil_date, :image, :finished, :proxy_id)', data);
-	console.log(`insert DB query: ${Date.now() - start}`);
+	db.query('INSERT INTO leftovers ("title", "description", "freezer", "start_date", "spoil_date", "image", "finished", "proxy_id") '
+		+' VALUES (:title, :description, :freezer, :start_date, :spoil_date, :image, :finished, :proxy_id)', data);
 
 	return db.lastInsertRowId;
 }
@@ -46,6 +47,7 @@ export function insert(data:insertData):number {
 export type UpdateData = {
 	title?: string,
 	description?: string,
+	freezer?: boolean, 
 	start_date?: Date,
 	spoil_date?: Date,
 	image_mode: string,
@@ -53,7 +55,7 @@ export type UpdateData = {
 	finished?: boolean,
 	proxy_id: string
 }
-const update_keys = ["proxy_id", 'title', 'description', 'finished', 'start_date', 'spoil_date']
+const update_keys = ["proxy_id", 'title', 'description', 'freezer', 'finished', 'start_date', 'spoil_date']
 export function update(id:number, data:UpdateData) {
 	const sets :string[] = [];
 	const set_data :Record<string, any> = {'id':id};
@@ -74,5 +76,4 @@ export function update(id:number, data:UpdateData) {
 	
 	const start = Date.now();
 	getDB().query('UPDATE leftovers SET '+sets.join(', ')+' WHERE id = :id', set_data);
-	console.log(`update DB query: ${Date.now() - start}`);
 }
