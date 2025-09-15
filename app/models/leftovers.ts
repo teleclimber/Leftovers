@@ -8,7 +8,7 @@ export type Leftover = {
 	image: string,
 	start_date: Date,
 	spoil_date : Date,
-	last_update: Date,
+	last_update: Date,	// actually a hallucinated prop, not in DB.
 	finished: boolean,
 	proxy_id: string,
 }
