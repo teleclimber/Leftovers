@@ -64,11 +64,14 @@ export enum ImageChangeMode {
 
 export const useLeftoverItemsStore = defineStore('leftover-items', () => {
 	const loaded = ref(false);
+	const loading = ref(0);
+	const last_loaded = ref(new Date);
 
 	const items :LeftoverItem[] = reactive([]);
 
-	async function fetchActive() {
-		if( loaded.value ) return;
+	async function fetchActive(reload=false) {
+		if( loaded.value && !reload ) return;
+		++loading.value;
 		const resp = await gFetch('/api/leftovers/');
 		const data = <any[]>await resp.json();
 		items.splice(0);	// empty items in case of a re-fetch.
@@ -78,6 +81,8 @@ export const useLeftoverItemsStore = defineStore('leftover-items', () => {
 		// sort to oldest first
 		items.sort(sortItem);
 		loaded.value = true;
+		--loading.value;
+		last_loaded.value = new Date;
 	}
 
 	async function getLoadItem(id:number) :Promise<LeftoverItem | undefined> {
@@ -140,7 +145,7 @@ export const useLeftoverItemsStore = defineStore('leftover-items', () => {
 	}
 
 	return {
-		loaded, items, fetchActive,
+		loaded, loading, last_loaded, items, fetchActive,
 		getLoadItem,
 		postNewItem, patchItem
 	}
