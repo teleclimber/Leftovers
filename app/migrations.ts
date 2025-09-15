@@ -43,11 +43,11 @@ export default function createMigrations() {
 	});
 
 	m.upTo(2, async () => {
-		const db = getCreateDB();
+		const db = getDB();
 		db.query("ALTER TABLE leftovers ADD COLUMN \"freezer\" INTEGER NOT NULL DEFAULT 0");
 	});
 	m.downFrom(2, async () => {
-		const db = getCreateDB();
+		const db = getDB();
 		db.query("ALTER TABLE leftovers DROP COLUMN \"freezer\"");
 	});
 

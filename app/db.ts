@@ -5,7 +5,7 @@ const dbFilename = "leftovers.db";
 let db :DB|undefined;
 
 export default function getDB() :DB {
-	if( db === undefined ) {
+	if( db === undefined || db.isClosed ) {
 		const start = Date.now();
 		db = new DB(app.appspacePath(dbFilename), {mode:"write"});
 		console.log(`getDB: ${Date.now() - start}`);
