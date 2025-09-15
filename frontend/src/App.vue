@@ -44,6 +44,11 @@ const leftoverItemsStore = useLeftoverItemsStore();
 		</div>
 	</div>
 </template>
+
+<style>
+@import "tailwindcss";
+</style>
+
 <style scoped>
 header {
 	background: rgb(5, 150, 105);
