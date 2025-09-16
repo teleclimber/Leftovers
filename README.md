@@ -1,22 +1,16 @@
 # Leftovers
 
-*Leftovers* is a [Dropserver](https://dropserver.org) app that helps you keep track of leftovers and perishables in your refrigerator.
+*Leftovers* is a [Dropserver](https://dropserver.org) app that helps you keep track of leftover food and perishables in your refrigerator and freezer.
 
-When you are about to put Leftovers in the fridge, opent he Leftovers app and hit the "+" to create a new leftover. Snap a pic with the integrated camera, describe the contents and set a time until it's considered spoiled.
+See the [Leftovers app website](https://leftovers.olivierforget.net/).
 
-The main page shows all your current leftovers, making it easy to see what should be eaten soon, and what could be combined into a meal.
+As a Dropserver app Leftovers does not need to "pay for itself". It can just *be*, with a lean set of features, no tracking, and no external hosting dependencies.
 
-## The Dropserver App:
+## Code
 
-- 100% self-contained
-- makes zero requests outside your appspace
-- multi-user
+The backend is a [Dropserver app](https://dropserver.org/docs/building-dropserver-app).
 
-## Current status
-
-The app is quite usable, though it has some bugs and missing features.
-
-Dropserver is very new therefore you will probably need some help using this for now. Have a look at the [discussions in the Dropserver repo](https://github.com/teleclimber/Dropserver/discussions).
+The frontend is Vue 3 with Pinia built by Vite. It depends on Tailwind for now, but I want to go back to vanilla CSS.
 
 ## License
 
